@@ -1,0 +1,21 @@
+@startuml entities
+title MongoDB Document Models
+
+entity "users" as User {
+  * chatId : number
+  --
+  name : string | null
+  state : "awaiting_name" | "ready"
+  createdAt : Date
+}
+
+entity "messages" as Message {
+  * chatId : number
+  --
+  direction : "bot" | "user"
+  text : string
+  sentAt : Date
+}
+
+User ||--o{ Message : "chatId"
+@enduml
