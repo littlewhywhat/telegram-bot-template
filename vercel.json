@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "installCommand": "pnpm install",
+  "devCommand": "pnpm run dev",
+  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+}
