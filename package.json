@@ -15,20 +15,29 @@
   },
   "dependencies": {
     "@radix-ui/themes": "^3.3.0",
-    "hono": "^4.12.5",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1"
+    "effect": "^3.21.0",
+    "grammy": "^1.42.0",
+    "hono": "^4.12.12",
+    "mongodb": "^7.1.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.5",
-    "@hono/node-server": "^1.19.10",
-    "@types/node": "^22.19.13",
+    "@biomejs/biome": "^2.4.11",
+    "@cucumber/cucumber": "^12.7.0",
+    "@hono/node-server": "^1.19.13",
+    "@types/node": "^22.19.17",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vite": "^6.4.1"
+    "vite": "^6.4.2",
+    "vitest": "^4.1.4"
+  },
+  "optionalDependencies": {
+    "mongodb-memory-server": "^11.0.1"
   },
   "engines": {
     "node": ">=22"
