@@ -1,0 +1,27 @@
+name: Set Production Webhook
+
+on:
+  workflow_dispatch:
+    inputs:
+      webhook_url:
+        description: 'Production URL (e.g. https://my-bot.vercel.app)'
+        required: true
+
+jobs:
+  set-webhook:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile --no-optional
+      - name: Set webhook
+        run: pnpm run webhook:set
+        env:
+          BOT_TOKEN: ${{ secrets.PROD_BOT_TOKEN }}
+          WEBHOOK_URL: ${{ inputs.webhook_url }}
+          WEBHOOK_SECRET: ${{ secrets.PROD_WEBHOOK_SECRET }}

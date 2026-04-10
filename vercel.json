@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run build",
+  "buildCommand": "pnpm run build && pnpm run db:migrate",
   "outputDirectory": "dist",
   "framework": null,
   "installCommand": "pnpm install",

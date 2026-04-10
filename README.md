@@ -67,18 +67,23 @@ All tests use `mongodb-memory-server` — no Docker or external DB required.
 ### Connect to Vercel
 
 1. Import repo in [vercel.com](https://vercel.com)
-2. Set environment variables per environment (Preview + Production):
+2. Disable preview deploys: Project Settings → Git → Ignored Build Step → set to skip all preview builds
+3. Set environment variables for **Production**:
    - `BOT_TOKEN`
    - `WEBHOOK_SECRET`
    - `MONGODB_URI`
 
+Production deploys happen automatically on push to `main`. The `buildCommand` in `vercel.json` runs `db:migrate` after each build.
+
 ### Staging
 
-Push to `develop` → CI runs → Vercel preview deploy → webhook set → smoke test.
+Push to `develop` → GitHub Actions `deploy-staging.yml` runs CI → deploys Vercel preview → runs migrations → sets webhook → smoke test.
 
-### Production
+### Set Webhooks
 
-Trigger `deploy-prod.yml` manually via GitHub Actions `workflow_dispatch`.
+- **Production**: trigger `set-webhook-prod.yml` via GitHub Actions → enter the production URL when prompted. Secrets are read from the `production` environment.
+- **Staging**: set automatically by the deploy workflow on each push to `develop`.
+- **Local**: use a tunnel (ngrok/cloudflared), then `WEBHOOK_URL=https://your-tunnel.ngrok.io pnpm run webhook:set`
 
 ## 7. GitHub Secrets
 
@@ -86,11 +91,11 @@ Configure these in your repo's Settings → Secrets and variables → Actions:
 
 | Secret | Description |
 |---|---|
+| `VERCEL_TOKEN` | Vercel API token |
+| `VERCEL_ORG_ID` | Vercel org/team ID |
+| `VERCEL_PROJECT_ID` | Vercel project ID |
 | `STAGING_BOT_TOKEN` | Staging Telegram bot token |
 | `STAGING_WEBHOOK_SECRET` | Staging webhook verification secret |
 | `STAGING_MONGODB_URI` | MongoDB Atlas staging connection string |
 | `PROD_BOT_TOKEN` | Production Telegram bot token |
 | `PROD_WEBHOOK_SECRET` | Production webhook verification secret |
-| `PROD_MONGODB_URI` | MongoDB Atlas production connection string |
-
-> **NOTE:** Webhook registration (`pnpm run webhook:set`) is a deployment step only — it's handled automatically by the staging/prod CI workflows. For local bot testing, use a tunnel (ngrok/cloudflared), set `WEBHOOK_URL` to the tunnel URL, then run `pnpm run webhook:set` manually.
