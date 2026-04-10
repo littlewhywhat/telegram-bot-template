@@ -1,5 +1,5 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient, type Db } from "mongodb";
+import { type Db, MongoClient } from 'mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongod: MongoMemoryServer;
 let client: MongoClient;

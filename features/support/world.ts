@@ -1,7 +1,7 @@
-import { World, setWorldConstructor } from "@cucumber/cucumber";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient, type Db } from "mongodb";
-import type { SentMessage } from "../../tests/helpers/mock-bot.js";
+import { setWorldConstructor, World } from '@cucumber/cucumber';
+import { type Db, MongoClient } from 'mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import type { SentMessage } from '../../tests/helpers/mock-bot.js';
 
 export class BotWorld extends World {
   mongod!: MongoMemoryServer;

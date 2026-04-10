@@ -1,8 +1,8 @@
-import { Effect as Fx, pipe } from "effect";
-import { DbService } from "../../db/services.js";
-import { BotService } from "../services.js";
+import { Effect as Fx, pipe } from 'effect';
+import { DbService } from '../../db/services.js';
+import { BotService } from '../services.js';
 
-const PROMPT = "Please tell me your name.";
+const PROMPT = 'Please tell me your name.';
 
 export function handleMessage(chatId: number, text: string) {
   const trimmed = text.trim();
@@ -14,8 +14,9 @@ export function handleMessage(chatId: number, text: string) {
       pipe(
         db.getUser(chatId),
         Fx.flatMap((user) =>
-          Fx.when(Fx.succeed({ db, bot }), () =>
-            !!user && user.state === "awaiting_name",
+          Fx.when(
+            Fx.succeed({ db, bot }),
+            () => !!user && user.state === 'awaiting_name',
           ),
         ),
       ),
@@ -23,12 +24,15 @@ export function handleMessage(chatId: number, text: string) {
     Fx.flatten,
     Fx.tap(({ db }) =>
       Fx.when(
-        db.saveMessage({ chatId, direction: "user", text, sentAt: new Date() }),
+        db.saveMessage({ chatId, direction: 'user', text, sentAt: new Date() }),
         hasName,
       ),
     ),
     Fx.tap(({ db }) =>
-      Fx.when(db.upsertUser(chatId, { name: trimmed, state: "ready" }), hasName),
+      Fx.when(
+        db.upsertUser(chatId, { name: trimmed, state: 'ready' }),
+        hasName,
+      ),
     ),
     Fx.flatMap(({ db, bot }) =>
       Fx.if(hasName(), {
@@ -39,7 +43,12 @@ export function handleMessage(chatId: number, text: string) {
           pipe(
             bot.sendMessage(chatId, reply),
             Fx.tap(() =>
-              db.saveMessage({ chatId, direction: "bot", text: reply, sentAt: new Date() }),
+              db.saveMessage({
+                chatId,
+                direction: 'bot',
+                text: reply,
+                sentAt: new Date(),
+              }),
             ),
           ),
         ),

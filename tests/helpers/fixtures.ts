@@ -1,10 +1,10 @@
-import type { User, Message } from "../../db/types.js";
+import type { Message, User } from '../../db/types.js';
 
 export function buildUser(overrides: Partial<User> = {}): User {
   return {
     chatId: 1,
     name: null,
-    state: "awaiting_name",
+    state: 'awaiting_name',
     createdAt: new Date(),
     ...overrides,
   };
@@ -13,8 +13,8 @@ export function buildUser(overrides: Partial<User> = {}): User {
 export function buildMessage(overrides: Partial<Message> = {}): Message {
   return {
     chatId: 1,
-    direction: "user",
-    text: "hello",
+    direction: 'user',
+    text: 'hello',
     sentAt: new Date(),
     ...overrides,
   };

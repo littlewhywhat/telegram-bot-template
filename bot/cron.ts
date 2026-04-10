@@ -1,14 +1,14 @@
-import { Effect as Fx, pipe } from "effect";
-import { DbService } from "../db/services.js";
-import { BotService } from "./services.js";
-import { quotes } from "./quotes.js";
+import { Effect as Fx, pipe } from 'effect';
+import { DbService } from '../db/services.js';
+import { quotes } from './quotes.js';
+import { BotService } from './services.js';
 
 function pickQuote(): string {
   return quotes[Math.floor(Math.random() * quotes.length)];
 }
 
 function greetingPrefix(hour: number): string {
-  return hour < 12 ? "Good morning" : "Good evening";
+  return hour < 12 ? 'Good morning' : 'Good evening';
 }
 
 export function runCron(overrideHour?: number) {
@@ -29,14 +29,14 @@ export function runCron(overrideHour?: number) {
             Fx.tap(() =>
               db.saveMessage({
                 chatId: user.chatId,
-                direction: "bot",
+                direction: 'bot',
                 text,
                 sentAt: new Date(),
               }),
             ),
           );
         }),
-        { concurrency: "unbounded" },
+        { concurrency: 'unbounded' },
       ),
     ),
   );

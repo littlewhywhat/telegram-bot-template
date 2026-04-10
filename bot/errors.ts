@@ -1,14 +1,14 @@
-import { Data } from "effect";
+import { Data } from 'effect';
 
-export class DbError extends Data.TaggedError("DbError")<{
+export class DbError extends Data.TaggedError('DbError')<{
   cause: unknown;
 }> {}
 
-export class BotError extends Data.TaggedError("BotError")<{
+export class BotError extends Data.TaggedError('BotError')<{
   cause: unknown;
 }> {}
 
-export class ConfigError extends Data.TaggedError("ConfigError")<{
+export class ConfigError extends Data.TaggedError('ConfigError')<{
   message: string;
 }> {}
 

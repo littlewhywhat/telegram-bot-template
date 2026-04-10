@@ -1,16 +1,16 @@
-import { Before, After } from "@cucumber/cucumber";
-import { Layer, Effect } from "effect";
-import type { BotWorld } from "./world.js";
-import { makeDbLayer } from "../../db/services.js";
-import { BotService } from "../../bot/services.js";
-import { setAppLayer } from "../../api/context.js";
+import { After, Before } from '@cucumber/cucumber';
+import { Effect, Layer } from 'effect';
+import { setAppLayer } from '../../api/context.js';
+import { BotService } from '../../bot/services.js';
+import { makeDbLayer } from '../../db/services.js';
+import type { BotWorld } from './world.js';
 
 Before(async function (this: BotWorld) {
   await this.startDb();
   this.sent = [];
   this.mockedHour = null;
 
-  process.env.WEBHOOK_SECRET = "test-secret";
+  process.env.WEBHOOK_SECRET = 'test-secret';
 
   const dbLayer = makeDbLayer(this.db);
   const botLayer = Layer.succeed(BotService, {
