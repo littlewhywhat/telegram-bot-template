@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { Effect } from "effect";
+import { Effect as Fx, pipe } from "effect";
 import { getAppLayer } from "./context.js";
 import { handleStart } from "../bot/handlers/start.js";
 import { handleMessage } from "../bot/handlers/message.js";
@@ -24,10 +24,10 @@ app.post("/webhook", async (c) => {
   const chatId: number = message.chat.id;
   const text: string = message.text ?? "";
 
-  const effect =
+  const program =
     text === "/start" ? handleStart(chatId) : handleMessage(chatId, text);
 
-  await Effect.runPromise(effect.pipe(Effect.provide(getAppLayer())));
+  await Fx.runPromise(pipe(program, Fx.provide(getAppLayer())));
 
   return c.json({ ok: true });
 });
@@ -35,9 +35,7 @@ app.post("/webhook", async (c) => {
 app.get("/cron", async (c) => {
   const hour = c.req.query("hour");
   const overrideHour = hour !== undefined ? Number(hour) : undefined;
-  await Effect.runPromise(
-    runCron(overrideHour).pipe(Effect.provide(getAppLayer())),
-  );
+  await Fx.runPromise(pipe(runCron(overrideHour), Fx.provide(getAppLayer())));
   return c.json({ ok: true });
 });
 

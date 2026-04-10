@@ -1,55 +1,48 @@
-import { Effect } from "effect";
+import { Effect as Fx, pipe } from "effect";
 import { DbService } from "../../db/services.js";
 import { BotService } from "../services.js";
 
 const PROMPT = "Please tell me your name.";
 
 export function handleMessage(chatId: number, text: string) {
-  return Effect.flatMap(DbService, (db) =>
-    Effect.flatMap(BotService, (bot) =>
-      db.getUser(chatId).pipe(
-        Effect.flatMap((user) => {
-          if (!user || user.state !== "awaiting_name") {
-            return Effect.void;
-          }
+  const trimmed = text.trim();
+  const hasName = () => trimmed.length > 0;
 
-          const trimmed = text.trim();
-          if (!trimmed) {
-            return bot.sendMessage(chatId, PROMPT).pipe(
-              Effect.tap(() =>
-                db.saveMessage({
-                  chatId,
-                  direction: "bot",
-                  text: PROMPT,
-                  sentAt: new Date(),
-                }),
-              ),
-            );
-          }
-
-          const reply = `Nice to meet you, ${trimmed}!`;
-          return db
-            .upsertUser(chatId, { name: trimmed, state: "ready" })
-            .pipe(
-              Effect.tap(() =>
-                db.saveMessage({
-                  chatId,
-                  direction: "user",
-                  text,
-                  sentAt: new Date(),
-                }),
-              ),
-              Effect.tap(() => bot.sendMessage(chatId, reply)),
-              Effect.tap(() =>
-                db.saveMessage({
-                  chatId,
-                  direction: "bot",
-                  text: reply,
-                  sentAt: new Date(),
-                }),
-              ),
-            );
-        }),
+  return pipe(
+    Fx.all({ db: DbService, bot: BotService }),
+    Fx.flatMap(({ db, bot }) =>
+      pipe(
+        db.getUser(chatId),
+        Fx.flatMap((user) =>
+          Fx.when(Fx.succeed({ db, bot }), () =>
+            !!user && user.state === "awaiting_name",
+          ),
+        ),
+      ),
+    ),
+    Fx.flatten,
+    Fx.tap(({ db }) =>
+      Fx.when(
+        db.saveMessage({ chatId, direction: "user", text, sentAt: new Date() }),
+        hasName,
+      ),
+    ),
+    Fx.tap(({ db }) =>
+      Fx.when(db.upsertUser(chatId, { name: trimmed, state: "ready" }), hasName),
+    ),
+    Fx.flatMap(({ db, bot }) =>
+      Fx.if(hasName(), {
+        onTrue: () => Fx.succeed(`Nice to meet you, ${trimmed}!`),
+        onFalse: () => Fx.succeed(PROMPT),
+      }).pipe(
+        Fx.flatMap((reply) =>
+          pipe(
+            bot.sendMessage(chatId, reply),
+            Fx.tap(() =>
+              db.saveMessage({ chatId, direction: "bot", text: reply, sentAt: new Date() }),
+            ),
+          ),
+        ),
       ),
     ),
   );

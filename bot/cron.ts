@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect as Fx, pipe } from "effect";
 import { DbService } from "../db/services.js";
 import { BotService } from "./services.js";
 import { quotes } from "./quotes.js";
@@ -15,27 +15,28 @@ export function runCron(overrideHour?: number) {
   const hour = overrideHour ?? new Date().getUTCHours();
   const prefix = greetingPrefix(hour);
 
-  return Effect.flatMap(DbService, (db) =>
-    Effect.flatMap(BotService, (bot) =>
-      db.getAllReadyUsers().pipe(
-        Effect.flatMap((users) =>
-          Effect.all(
-            users.map((user) => {
-              const text = `${prefix}, ${user.name}!\n${pickQuote()}`;
-              return bot.sendMessage(user.chatId, text).pipe(
-                Effect.tap(() =>
-                  db.saveMessage({
-                    chatId: user.chatId,
-                    direction: "bot",
-                    text,
-                    sentAt: new Date(),
-                  }),
-                ),
-              );
-            }),
-            { concurrency: "unbounded" },
-          ),
-        ),
+  return pipe(
+    Fx.all({ db: DbService, bot: BotService }),
+    Fx.flatMap(({ db, bot }) =>
+      Fx.map(db.getAllReadyUsers(), (users) => ({ db, bot, users })),
+    ),
+    Fx.flatMap(({ db, bot, users }) =>
+      Fx.all(
+        users.map((user) => {
+          const text = `${prefix}, ${user.name}!\n${pickQuote()}`;
+          return pipe(
+            bot.sendMessage(user.chatId, text),
+            Fx.tap(() =>
+              db.saveMessage({
+                chatId: user.chatId,
+                direction: "bot",
+                text,
+                sentAt: new Date(),
+              }),
+            ),
+          );
+        }),
+        { concurrency: "unbounded" },
       ),
     ),
   );

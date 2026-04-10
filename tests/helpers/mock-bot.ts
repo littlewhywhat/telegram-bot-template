@@ -1,4 +1,4 @@
-import { Layer, Effect } from "effect";
+import { Layer, Effect as Fx } from "effect";
 import { BotService } from "../../bot/services.js";
 
 export interface SentMessage {
@@ -14,7 +14,7 @@ export function createMockBotLayer(): {
 
   const layer = Layer.succeed(BotService, {
     sendMessage: (chatId: number, text: string) =>
-      Effect.sync(() => {
+      Fx.sync(() => {
         sent.push({ chatId, text });
       }),
   });

@@ -1,17 +1,17 @@
-import { Context, Effect, Layer } from "effect";
+import { Context, Effect as Fx, Layer } from "effect";
 import type { Db } from "mongodb";
 import type { User, Message } from "./types.js";
 import { DbError } from "../bot/errors.js";
 import { users, messages } from "./collections.js";
 
 export interface DbService {
-  getUser: (chatId: number) => Effect.Effect<User | null, DbError>;
+  getUser: (chatId: number) => Fx.Effect<User | null, DbError>;
   upsertUser: (
     chatId: number,
     data: Partial<Omit<User, "chatId">>,
-  ) => Effect.Effect<void, DbError>;
-  saveMessage: (message: Message) => Effect.Effect<void, DbError>;
-  getAllReadyUsers: () => Effect.Effect<ReadonlyArray<User>, DbError>;
+  ) => Fx.Effect<void, DbError>;
+  saveMessage: (message: Message) => Fx.Effect<void, DbError>;
+  getAllReadyUsers: () => Fx.Effect<ReadonlyArray<User>, DbError>;
 }
 
 export const DbService = Context.GenericTag<DbService>("DbService");
@@ -19,13 +19,13 @@ export const DbService = Context.GenericTag<DbService>("DbService");
 export function makeDbService(db: Db): DbService {
   return {
     getUser: (chatId) =>
-      Effect.tryPromise({
+      Fx.tryPromise({
         try: () => users(db).findOne({ chatId }) as Promise<User | null>,
         catch: (cause) => new DbError({ cause }),
       }),
 
     upsertUser: (chatId, data) =>
-      Effect.tryPromise({
+      Fx.tryPromise({
         try: () =>
           users(db)
             .updateOne(
@@ -38,13 +38,13 @@ export function makeDbService(db: Db): DbService {
       }),
 
     saveMessage: (message) =>
-      Effect.tryPromise({
+      Fx.tryPromise({
         try: () => messages(db).insertOne(message as any).then(() => undefined),
         catch: (cause) => new DbError({ cause }),
       }),
 
     getAllReadyUsers: () =>
-      Effect.tryPromise({
+      Fx.tryPromise({
         try: () =>
           users(db)
             .find({ state: "ready" })
