@@ -29,7 +29,11 @@ When(
 );
 
 When("the cron job runs", async function (this: BotWorld) {
-  await app.request("/api/cron");
+  const url =
+    this.mockedHour !== null
+      ? `/api/cron?hour=${this.mockedHour}`
+      : "/api/cron";
+  await app.request(url);
 });
 
 Then(

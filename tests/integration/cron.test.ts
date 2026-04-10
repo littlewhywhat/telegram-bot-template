@@ -1,10 +1,16 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { Layer } from "effect";
 import { startDb, stopDb, cleanDb, getDb } from "../helpers/setup.js";
+import { createMockBotLayer } from "../helpers/mock-bot.js";
+import { makeDbLayer } from "../../db/services.js";
+import { setAppLayer } from "../../api/context.js";
 import app from "../../api/app.js";
 
 describe("GET /api/cron", () => {
   beforeAll(async () => {
-    await startDb();
+    const db = await startDb();
+    const { layer: botLayer } = createMockBotLayer();
+    setAppLayer(Layer.merge(makeDbLayer(db), botLayer));
   });
 
   afterAll(async () => {
