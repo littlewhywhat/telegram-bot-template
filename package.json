@@ -42,9 +42,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^6.4.2",
-    "vitest": "^4.1.4"
-  },
-  "optionalDependencies": {
+    "vitest": "^4.1.4",
     "mongodb-memory-server": "^11.0.1"
   },
   "engines": {

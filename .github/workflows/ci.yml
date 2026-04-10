@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile --no-optional
-      - run: pnpm run check
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm biome ci .
 
   typecheck:
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile --no-optional
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
 
   build:
@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile --no-optional
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run build
 
   test-integration:
