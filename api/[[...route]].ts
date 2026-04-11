@@ -19,6 +19,8 @@ if (missing.length > 0) {
   console.log('[init] App layer configured');
 }
 
+export const config = { maxDuration: 10 };
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const url = new URL(req.url ?? '/', `https://${req.headers.host}`);
   const headers = new Headers();
@@ -32,7 +34,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     init.body = JSON.stringify(req.body);
   }
 
-  const response = await app.fetch(new Request(url.toString(), init));
+  const response = await Promise.race([
+    app.fetch(new Request(url.toString(), init)),
+    new Promise<Response>((_, reject) =>
+      setTimeout(() => reject(new Error('Handler timeout (10s)')), 9000),
+    ),
+  ]);
 
   res.status(response.status);
   response.headers.forEach((v, k) => {
