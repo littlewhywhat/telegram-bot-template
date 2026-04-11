@@ -1,4 +1,4 @@
-name: Set Production Webhook
+name: Setup Production Bot
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         required: true
 
 jobs:
-  set-webhook:
+  setup-bot:
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -19,8 +19,8 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile --no-optional
-      - name: Set webhook
-        run: pnpm run webhook:set
+      - name: Setup bot
+        run: pnpm run bot:setup
         env:
           BOT_TOKEN: ${{ secrets.PROD_BOT_TOKEN }}
           WEBHOOK_URL: ${{ inputs.webhook_url }}

@@ -36,5 +36,12 @@ jobs:
         env:
           MONGODB_URI: ${{ secrets.PROD_MONGODB_URI }}
 
+      - name: Setup bot
+        run: pnpm run bot:setup
+        env:
+          BOT_TOKEN: ${{ secrets.PROD_BOT_TOKEN }}
+          WEBHOOK_URL: ${{ steps.vercel.outputs.url }}
+          WEBHOOK_SECRET: ${{ secrets.PROD_WEBHOOK_SECRET }}
+
       - name: Smoke test
         run: curl -sf "${{ steps.vercel.outputs.url }}/api/health"

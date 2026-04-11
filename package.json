@@ -15,7 +15,7 @@
     "db:down": "docker compose -f docker/docker-compose.yml down",
     "db:seed": "tsx scripts/seed.ts",
     "db:migrate": "tsx scripts/migrate.ts",
-    "webhook:set": "tsx scripts/set-webhook.ts",
+    "bot:setup": "tsx scripts/setup-bot.ts",
     "test": "pnpm run test:integration && pnpm run test:e2e",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "cucumber-js",

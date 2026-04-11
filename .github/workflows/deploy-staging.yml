@@ -37,8 +37,8 @@ jobs:
         env:
           MONGODB_URI: ${{ secrets.STAGING_MONGODB_URI }}
 
-      - name: Set webhook
-        run: pnpm run webhook:set
+      - name: Setup bot
+        run: pnpm run bot:setup
         env:
           BOT_TOKEN: ${{ secrets.STAGING_BOT_TOKEN }}
           WEBHOOK_URL: ${{ steps.vercel.outputs.url }}
