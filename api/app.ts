@@ -1,16 +1,23 @@
 import { Cause, Exit, Effect as Fx, pipe } from 'effect';
+import type { MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import { runCron } from '../bot/cron.js';
 import { handleMessage } from '../bot/handlers/message.js';
 import { handleStart } from '../bot/handlers/start.js';
 import { DbService } from '../db/services.js';
-import { getAppLayer, REQUIRED_ENV } from './context.js';
+import { ensureAppLayer, getAppLayer, REQUIRED_ENV } from './context.js';
 
 function logError(context: string, exit: Exit.Exit<unknown, unknown>) {
   if (Exit.isFailure(exit)) {
     console.error(`[${context}]`, Cause.squash(exit.cause));
   }
 }
+
+const requireAppLayer: MiddlewareHandler = async (c, next) => {
+  const ready = ensureAppLayer();
+  if (!ready) return c.json({ error: 'Internal Server Error' }, 500);
+  await next();
+};
 
 const app = new Hono().basePath('/api');
 
@@ -73,7 +80,7 @@ app.get('/health', async (c) => {
   );
 });
 
-app.post('/webhook', async (c) => {
+app.post('/webhook', requireAppLayer, async (c) => {
   console.log('[webhook] handler entered');
   const secret = c.req.header('X-Telegram-Bot-Api-Secret-Token');
   console.log('[webhook] secret check done');
@@ -108,7 +115,7 @@ app.post('/webhook', async (c) => {
   return c.json({ ok: true });
 });
 
-app.get('/cron', async (c) => {
+app.get('/cron', requireAppLayer, async (c) => {
   const hour = c.req.query('hour');
   const overrideHour = hour !== undefined ? Number(hour) : undefined;
 
