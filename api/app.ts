@@ -13,7 +13,7 @@ function logError(context: string, exit: Exit.Exit<unknown, unknown>) {
 
 const app = new Hono().basePath('/api');
 
-app.get('/health', (c) => {
+app.get('/health', async (c) => {
   const envKeys = ['BOT_TOKEN', 'WEBHOOK_SECRET', 'MONGODB_URI'] as const;
   const env: Record<string, string> = {};
   for (const key of envKeys) {
@@ -28,8 +28,33 @@ app.get('/health', (c) => {
     layer = 'not_configured';
   }
 
+  let db = 'skipped';
+  let dbHost = '';
+  if (process.env.MONGODB_URI) {
+    try {
+      const parsed = new URL(process.env.MONGODB_URI);
+      dbHost = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
+    } catch {
+      dbHost = 'invalid_uri';
+    }
+    try {
+      const { getClient } = await import('../db/client.js');
+      await Promise.race([
+        getClient().db().command({ ping: 1 }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 5000),
+        ),
+      ]);
+      db = 'ok';
+    } catch (err) {
+      db = `error: ${err instanceof Error ? err.message : String(err)}`;
+    }
+  }
+
   const healthy =
-    Object.values(env).every((v) => v === 'set') && layer === 'ok';
+    Object.values(env).every((v) => v === 'set') &&
+    layer === 'ok' &&
+    db === 'ok';
 
   return c.json(
     {
@@ -37,6 +62,8 @@ app.get('/health', (c) => {
       time: new Date().toISOString(),
       env,
       layer,
+      db,
+      dbHost,
     },
     healthy ? 200 : 503,
   );
