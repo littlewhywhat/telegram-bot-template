@@ -14,13 +14,14 @@ export const REQUIRED_ENV = [
 
 let appLayer: Layer.Layer<DbService | BotService> | null = null;
 
-export function ensureAppLayer(): void {
-  if (appLayer !== null) return;
+export function ensureAppLayer(): boolean {
+  if (appLayer !== null) return true;
   const missing = REQUIRED_ENV.filter((key) => !process.env[key]);
-  if (missing.length > 0) return;
+  if (missing.length > 0) return false;
   const db = getDb();
   const bot = createBot(process.env.BOT_TOKEN as string);
   setAppLayer(Layer.merge(makeDbLayer(db), makeBotLayer(bot)));
+  return true;
 }
 
 export function setAppLayer(layer: Layer.Layer<DbService | BotService>): void {
