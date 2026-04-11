@@ -69,11 +69,6 @@ app.get('/health', async (c) => {
   );
 });
 
-app.post('/debug', async (c) => {
-  console.log('[debug] POST received');
-  return c.json({ ok: true, debug: 'post works' });
-});
-
 app.post('/webhook', async (c) => {
   console.log('[webhook] handler entered');
   const secret = c.req.header('X-Telegram-Bot-Api-Secret-Token');

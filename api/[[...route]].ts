@@ -1,5 +1,5 @@
-import { handle } from '@hono/node-server/vercel';
 import { Layer } from 'effect';
+import { handle } from 'hono/vercel';
 import { createBot } from '../bot/index.js';
 import { makeBotLayer } from '../bot/services.js';
 import { getDb } from '../db/client.js';
