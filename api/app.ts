@@ -2,9 +2,11 @@ import { Cause, Exit, Effect as Fx, pipe } from 'effect';
 import type { MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import { runCron } from '../bot/cron.js';
+import { BotError, ConfigError, DbError } from '../bot/errors.js';
 import { handleMessage } from '../bot/handlers/message.js';
 import { handleStart } from '../bot/handlers/start.js';
-import { DbService } from '../db/services.js';
+import { createBot } from '../bot/index.js';
+import { getClient } from '../db/client.js';
 import { ensureAppLayer, getAppLayer, REQUIRED_ENV } from './context.js';
 
 function logError(context: string, exit: Exit.Exit<unknown, unknown>) {
@@ -22,61 +24,35 @@ const requireAppLayer: MiddlewareHandler = async (c, next) => {
 const app = new Hono().basePath('/api');
 
 app.get('/health', async (c) => {
-  const env: Record<string, string> = {};
-  for (const key of REQUIRED_ENV) {
-    env[key] = process.env[key] ? 'set' : 'MISSING';
-  }
+  const checkEnv = Fx.suspend(() => {
+    const missing = REQUIRED_ENV.filter((key) => !process.env[key]);
+    return missing.length > 0
+      ? Fx.fail(new ConfigError({ message: `missing env: ${missing.join(', ')}` }))
+      : Fx.void;
+  });
 
-  let layer = 'not_configured';
-  try {
-    getAppLayer();
-    layer = 'ok';
-  } catch {
-    layer = 'not_configured';
-  }
+  const checkDb = Fx.tryPromise({
+    try: () => getClient().db().command({ ping: 1 }),
+    catch: (cause) => new DbError({ cause }),
+  });
 
-  let dbHost = '';
-  if (process.env.MONGODB_URI) {
-    try {
-      const parsed = new URL(process.env.MONGODB_URI);
-      dbHost = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
-    } catch {
-      dbHost = 'invalid_uri';
-    }
-  }
+  const checkBot = Fx.try({
+    try: () => createBot(process.env.BOT_TOKEN!),
+    catch: (cause) => new BotError({ cause }),
+  });
 
-  let db = 'skipped';
-  if (Object.values(env).every((v) => v === 'set') && layer === 'ok') {
-    const exit = await Fx.runPromiseExit(
-      pipe(
-        Fx.all({ db: DbService }),
-        Fx.flatMap(({ db: svc }) => svc.ping()),
-        Fx.timeout('5 seconds'),
-        Fx.provide(getAppLayer()),
-      ),
-    );
-    if (Exit.isSuccess(exit)) {
-      db = 'ok';
-    } else {
-      db = `error: ${String(Cause.squash(exit.cause))}`;
-    }
-  }
+  const exit = await Fx.runPromiseExit(
+    pipe(checkEnv, Fx.andThen(checkDb), Fx.andThen(checkBot), Fx.timeout('5 seconds')),
+  );
 
-  const healthy =
-    Object.values(env).every((v) => v === 'set') &&
-    layer === 'ok' &&
-    db === 'ok';
+  if (Exit.isSuccess(exit)) {
+    ensureAppLayer();
+    return c.json({ status: 'ok', time: new Date().toISOString() });
+  }
 
   return c.json(
-    {
-      status: healthy ? 'ok' : 'degraded',
-      time: new Date().toISOString(),
-      env,
-      layer,
-      db,
-      dbHost,
-    },
-    healthy ? 200 : 503,
+    { status: 'degraded', time: new Date().toISOString(), error: String(Cause.squash(exit.cause)) },
+    503,
   );
 });
 
