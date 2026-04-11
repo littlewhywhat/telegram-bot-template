@@ -12,4 +12,8 @@ export class ConfigError extends Data.TaggedError('ConfigError')<{
   message: string;
 }> {}
 
-export type AppError = DbError | BotError | ConfigError;
+export class AuthError extends Data.TaggedError('AuthError')<{
+  message: string;
+}> {}
+
+export type AppError = DbError | BotError | ConfigError | AuthError;
