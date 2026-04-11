@@ -83,7 +83,7 @@ Push to `develop` → `deploy-staging.yml` runs CI → deploys Vercel preview �
 
 ### PR Testing
 
-Trigger `deploy-pr.yml` manually on your PR branch → deploys Vercel preview → runs migrations → sets staging webhook to the PR URL. When the PR is merged to `develop`, the staging deploy resets the webhook automatically.
+Add the `deploy-staging` label to a PR → deploys Vercel preview → runs migrations → sets staging webhook to the PR URL. Remove and re-add the label to redeploy. When the PR is merged to `develop`, the staging deploy resets the webhook automatically.
 
 ### Webhooks
 
