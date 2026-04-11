@@ -69,14 +69,23 @@ app.get('/health', async (c) => {
   );
 });
 
+app.post('/debug', async (c) => {
+  console.log('[debug] POST received');
+  return c.json({ ok: true, debug: 'post works' });
+});
+
 app.post('/webhook', async (c) => {
+  console.log('[webhook] handler entered');
   const secret = c.req.header('X-Telegram-Bot-Api-Secret-Token');
+  console.log('[webhook] secret check done');
   if (secret !== process.env.WEBHOOK_SECRET) {
     console.warn('[webhook] unauthorized request');
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
+  console.log('[webhook] parsing body...');
   const body = await c.req.json();
+  console.log('[webhook] body parsed');
   const message = body.message;
   if (!message) return c.json({ ok: true });
 
