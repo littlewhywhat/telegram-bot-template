@@ -2,6 +2,12 @@ import type { Layer } from 'effect';
 import type { BotService } from '../bot/services.js';
 import type { DbService } from '../db/services.js';
 
+export const REQUIRED_ENV = [
+  'BOT_TOKEN',
+  'WEBHOOK_SECRET',
+  'MONGODB_URI',
+] as const;
+
 let appLayer: Layer.Layer<DbService | BotService> | null = null;
 
 export function setAppLayer(layer: Layer.Layer<DbService | BotService>): void {

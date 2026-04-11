@@ -39,9 +39,6 @@ importers:
       '@cucumber/cucumber':
         specifier: ^12.7.0
         version: 12.7.0
-      '@hono/node-server':
-        specifier: ^1.19.13
-        version: 1.19.13(hono@4.12.12)
       '@types/node':
         specifier: ^22.19.17
         version: 22.19.17
@@ -785,12 +782,6 @@ packages:
 
   '@grammyjs/types@3.26.0':
     resolution: {integrity: sha512-jlnyfxfev/2o68HlvAGRocAXgdPPX5QabG7jZlbqC2r9DZyWBfzTlg+nu3O3Fy4EhgLWu28hZ/8wr7DsNamP9A==}
-
-  '@hono/node-server@1.19.13':
-    resolution: {integrity: sha512-TsQLe4i2gvoTtrHje625ngThGBySOgSK3Xo2XRYOdqGN1teR8+I7vchQC46uLJi8OF62YTYA3AhSpumtkhsaKQ==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: ^4
 
   '@isaacs/balanced-match@4.0.1':
     resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
@@ -3611,10 +3602,6 @@ snapshots:
   '@floating-ui/utils@0.2.11': {}
 
   '@grammyjs/types@3.26.0': {}
-
-  '@hono/node-server@1.19.13(hono@4.12.12)':
-    dependencies:
-      hono: 4.12.12
 
   '@isaacs/balanced-match@4.0.1': {}
 

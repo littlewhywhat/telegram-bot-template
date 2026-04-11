@@ -3,7 +3,8 @@ import { Hono } from 'hono';
 import { runCron } from '../bot/cron.js';
 import { handleMessage } from '../bot/handlers/message.js';
 import { handleStart } from '../bot/handlers/start.js';
-import { getAppLayer } from './context.js';
+import { DbService } from '../db/services.js';
+import { getAppLayer, REQUIRED_ENV } from './context.js';
 
 function logError(context: string, exit: Exit.Exit<unknown, unknown>) {
   if (Exit.isFailure(exit)) {
@@ -14,9 +15,8 @@ function logError(context: string, exit: Exit.Exit<unknown, unknown>) {
 const app = new Hono().basePath('/api');
 
 app.get('/health', async (c) => {
-  const envKeys = ['BOT_TOKEN', 'WEBHOOK_SECRET', 'MONGODB_URI'] as const;
   const env: Record<string, string> = {};
-  for (const key of envKeys) {
+  for (const key of REQUIRED_ENV) {
     env[key] = process.env[key] ? 'set' : 'MISSING';
   }
 
@@ -28,7 +28,6 @@ app.get('/health', async (c) => {
     layer = 'not_configured';
   }
 
-  let db = 'skipped';
   let dbHost = '';
   if (process.env.MONGODB_URI) {
     try {
@@ -37,17 +36,22 @@ app.get('/health', async (c) => {
     } catch {
       dbHost = 'invalid_uri';
     }
-    try {
-      const { getClient } = await import('../db/client.js');
-      await Promise.race([
-        getClient().db().command({ ping: 1 }),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('timeout')), 5000),
-        ),
-      ]);
+  }
+
+  let db = 'skipped';
+  if (Object.values(env).every((v) => v === 'set') && layer === 'ok') {
+    const exit = await Fx.runPromiseExit(
+      pipe(
+        Fx.all({ db: DbService }),
+        Fx.flatMap(({ db: svc }) => svc.ping()),
+        Fx.timeout('5 seconds'),
+        Fx.provide(getAppLayer()),
+      ),
+    );
+    if (Exit.isSuccess(exit)) {
       db = 'ok';
-    } catch (err) {
-      db = `error: ${err instanceof Error ? err.message : String(err)}`;
+    } else {
+      db = `error: ${String(Cause.squash(exit.cause))}`;
     }
   }
 

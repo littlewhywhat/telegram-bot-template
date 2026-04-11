@@ -5,6 +5,7 @@ import { messages, users } from './collections.js';
 import type { Message, User } from './types.js';
 
 export interface DbService {
+  ping: () => Fx.Effect<void, DbError>;
   getUser: (chatId: number) => Fx.Effect<User | null, DbError>;
   upsertUser: (
     chatId: number,
@@ -18,6 +19,12 @@ export const DbService = Context.GenericTag<DbService>('DbService');
 
 export function makeDbService(db: Db): DbService {
   return {
+    ping: () =>
+      Fx.tryPromise({
+        try: () => db.command({ ping: 1 }).then(() => undefined),
+        catch: (cause) => new DbError({ cause }),
+      }),
+
     getUser: (chatId) =>
       Fx.tryPromise({
         try: () => users(db).findOne({ chatId }) as Promise<User | null>,
