@@ -5,7 +5,6 @@ import type { Hono } from 'hono';
 
 export function createVercelHonoHandler(
   app: Hono,
-  handlerTimeoutMs: number,
 ): (req: VercelRequest, res: VercelResponse) => Promise<void> {
   return async (req: VercelRequest, res: VercelResponse) => {
     const url = new URL(req.url ?? '/', `https://${req.headers.host}`);
@@ -21,15 +20,7 @@ export function createVercelHonoHandler(
     }
 
     try {
-      const response = await Promise.race([
-        app.fetch(new Request(url.toString(), init)),
-        new Promise<never>((_, reject) =>
-          setTimeout(
-            () => reject(new Error(`Handler timeout (${handlerTimeoutMs}ms)`)),
-            handlerTimeoutMs,
-          ),
-        ),
-      ]);
+      const response = await app.fetch(new Request(url.toString(), init));
       res.status(response.status);
       response.headers.forEach((v, k) => {
         res.setHeader(k, v);
@@ -37,9 +28,9 @@ export function createVercelHonoHandler(
       res.end(await response.text());
     } catch (err) {
       console.error('[handler]', err);
-      res.status(504);
+      res.status(500);
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: 'Gateway Timeout' }));
+      res.end(JSON.stringify({ error: 'Internal Server Error' }));
     }
   };
 }

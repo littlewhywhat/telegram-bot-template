@@ -19,7 +19,7 @@ if (missing.length > 0) {
   console.log('[init] App layer configured');
 }
 
-const delegate = createVercelHonoHandler(app, 9000);
+const delegate = createVercelHonoHandler(app);
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   return delegate(req, res);
