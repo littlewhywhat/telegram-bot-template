@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { Then, When } from '@cucumber/cucumber';
-import app from '../../../api/app.js';
+import app from '../../../src/backend/api/app.js';
 import type { BotWorld } from '../world.js';
 
 When(

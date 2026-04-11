@@ -1,5 +1,5 @@
 import { Effect as Fx, Layer } from 'effect';
-import { BotService } from '../../bot/services.js';
+import { BotService } from '../../src/backend/bot/services.js';
 
 export interface SentMessage {
   chatId: number;

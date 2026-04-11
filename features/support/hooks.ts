@@ -1,8 +1,8 @@
 import { After, Before } from '@cucumber/cucumber';
 import { Effect, Layer } from 'effect';
-import { setAppLayer } from '../../api/context.js';
-import { BotService } from '../../bot/services.js';
-import { makeDbLayer } from '../../db/services.js';
+import { setAppLayer } from '../../src/backend/api/context.js';
+import { BotService } from '../../src/backend/bot/services.js';
+import { makeDbLayer } from '../../src/backend/db/services.js';
 import type { BotWorld } from './world.js';
 
 Before(async function (this: BotWorld) {

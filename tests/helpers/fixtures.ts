@@ -1,4 +1,4 @@
-import type { Message, User } from '../../db/types.js';
+import type { Message, User } from '../../src/backend/db/types.js';
 
 export function buildUser(overrides: Partial<User> = {}): User {
   return {

@@ -1,8 +1,8 @@
 import { Layer } from 'effect';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import app from '../../api/app.js';
-import { setAppLayer } from '../../api/context.js';
-import { makeDbLayer } from '../../db/services.js';
+import app from '../../src/backend/api/app.js';
+import { setAppLayer } from '../../src/backend/api/context.js';
+import { makeDbLayer } from '../../src/backend/db/services.js';
 import { createMockBotLayer } from '../helpers/mock-bot.js';
 import { getDb, getUri, startDb, stopDb } from '../helpers/setup.js';
 

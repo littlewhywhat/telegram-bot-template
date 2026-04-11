@@ -1,9 +1,2 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import app from './app.js';
-import { createVercelHonoHandler } from './vercelHonoHandler.js';
-
-const delegate = createVercelHonoHandler(app);
-
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  return delegate(req, res);
-}
+// Vercel only discovers serverless handlers under root `api/`; implementation lives in `src/backend/api/`.
+export { default } from '../src/backend/api/[[...route]].js';
