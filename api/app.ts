@@ -27,7 +27,11 @@ app.get('/health', async (c) => {
   const checkEnv = Fx.suspend(() => {
     const missing = REQUIRED_ENV.filter((key) => !process.env[key]);
     return missing.length > 0
-      ? Fx.fail(new ConfigError({ message: `missing env: ${missing.join(', ')}` }))
+      ? Fx.fail(
+          new ConfigError({
+            message: `missing env: ${missing.join(', ')}`,
+          }),
+        )
       : Fx.void;
   });
 
@@ -37,12 +41,17 @@ app.get('/health', async (c) => {
   });
 
   const checkBot = Fx.try({
-    try: () => createBot(process.env.BOT_TOKEN!),
+    try: () => createBot(process.env.BOT_TOKEN ?? ''),
     catch: (cause) => new BotError({ cause }),
   });
 
   const exit = await Fx.runPromiseExit(
-    pipe(checkEnv, Fx.andThen(checkDb), Fx.andThen(checkBot), Fx.timeout('5 seconds')),
+    pipe(
+      checkEnv,
+      Fx.andThen(checkDb),
+      Fx.andThen(checkBot),
+      Fx.timeout('5 seconds'),
+    ),
   );
 
   if (Exit.isSuccess(exit)) {
@@ -51,7 +60,11 @@ app.get('/health', async (c) => {
   }
 
   return c.json(
-    { status: 'degraded', time: new Date().toISOString(), error: String(Cause.squash(exit.cause)) },
+    {
+      status: 'degraded',
+      time: new Date().toISOString(),
+      error: String(Cause.squash(exit.cause)),
+    },
     503,
   );
 });

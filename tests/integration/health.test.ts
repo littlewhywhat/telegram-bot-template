@@ -30,11 +30,6 @@ describe('GET /api/health', () => {
     const body = await res.json();
     expect(body.status).toBe('ok');
     expect(body.time).toBeDefined();
-    expect(body.env.BOT_TOKEN).toBe('set');
-    expect(body.env.WEBHOOK_SECRET).toBe('set');
-    expect(body.env.MONGODB_URI).toBe('set');
-    expect(body.layer).toBe('ok');
-    expect(body.db).toBe('ok');
   });
 
   it('returns 503 when env vars are missing', async () => {
@@ -46,7 +41,7 @@ describe('GET /api/health', () => {
 
     const body = await res.json();
     expect(body.status).toBe('degraded');
-    expect(body.env.BOT_TOKEN).toBe('MISSING');
+    expect(body.error).toContain('BOT_TOKEN');
 
     process.env.BOT_TOKEN = saved;
   });
