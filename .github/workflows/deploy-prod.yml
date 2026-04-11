@@ -1,0 +1,40 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile --no-optional
+
+      - name: Deploy to Vercel (production)
+        id: vercel
+        run: |
+          npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          URL=$(npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Run migrations
+        run: pnpm run db:migrate
+        env:
+          MONGODB_URI: ${{ secrets.PROD_MONGODB_URI }}
+
+      - name: Smoke test
+        run: curl -sf "${{ steps.vercel.outputs.url }}/api/health"

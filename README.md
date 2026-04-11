@@ -67,22 +67,28 @@ All tests use `mongodb-memory-server` — no Docker or external DB required.
 ### Connect to Vercel
 
 1. Import repo in [vercel.com](https://vercel.com)
-2. Disable preview deploys: Project Settings → Git → Ignored Build Step → set to skip all preview builds
-3. Set environment variables for **Production**:
-   - `BOT_TOKEN`
-   - `WEBHOOK_SECRET`
-   - `MONGODB_URI`
+2. Disable "Auto-assign Custom Production Domains" in Project Settings → Deployment Protection so production deploys are staged and require manual promotion
+3. `vercel.json` has `git.deploymentEnabled: false` — Vercel won't auto-deploy on push; GitHub Actions workflows own all deployments
+4. Set environment variables in Vercel per environment:
+   - **Production**: `BOT_TOKEN`, `WEBHOOK_SECRET`, `MONGODB_URI`
+   - **Preview**: `BOT_TOKEN`, `WEBHOOK_SECRET`, `MONGODB_URI` (staging values)
 
-Production deploys happen automatically on push to `main`. The `buildCommand` in `vercel.json` runs `db:migrate` after each build.
+### Production
+
+Trigger `deploy-prod.yml` manually via GitHub Actions → runs CI → deploys to Vercel (staged) → runs migrations → smoke test. Then promote the deployment in the Vercel dashboard.
 
 ### Staging
 
-Push to `develop` → GitHub Actions `deploy-staging.yml` runs CI → deploys Vercel preview → runs migrations → sets webhook → smoke test.
+Push to `develop` → `deploy-staging.yml` runs CI → deploys Vercel preview → runs migrations → sets webhook → smoke test.
 
-### Set Webhooks
+### PR Testing
 
-- **Production**: trigger `set-webhook-prod.yml` via GitHub Actions → enter the production URL when prompted. Secrets are read from the `production` environment.
-- **Staging**: set automatically by the deploy workflow on each push to `develop`.
+Trigger `deploy-pr.yml` manually on your PR branch → deploys Vercel preview → runs migrations → sets staging webhook to the PR URL. When the PR is merged to `develop`, the staging deploy resets the webhook automatically.
+
+### Webhooks
+
+- **Production**: trigger `set-webhook-prod.yml` via GitHub Actions → enter the production URL when prompted. Only needed once (or when URL changes).
+- **Staging**: set automatically by the staging deploy workflow on each push to `develop`.
 - **Local**: use a tunnel (ngrok/cloudflared), then `WEBHOOK_URL=https://your-tunnel.ngrok.io pnpm run webhook:set`
 
 ## 7. GitHub Secrets
@@ -99,3 +105,4 @@ Configure these in your repo's Settings → Secrets and variables → Actions:
 | `STAGING_MONGODB_URI` | MongoDB Atlas staging connection string |
 | `PROD_BOT_TOKEN` | Production Telegram bot token |
 | `PROD_WEBHOOK_SECRET` | Production webhook verification secret |
+| `PROD_MONGODB_URI` | MongoDB Atlas production connection string |
