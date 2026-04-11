@@ -12,6 +12,10 @@ export async function startDb(): Promise<Db> {
   return db;
 }
 
+export function getUri(): string {
+  return mongod.getUri();
+}
+
 export async function stopDb(): Promise<void> {
   await client?.close();
   await mongod?.stop();
