@@ -6,3 +6,4 @@ dist
 !.env.test
 .DS_Store
 tsconfig.tsbuildinfo
+.env*.local

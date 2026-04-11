@@ -1,5 +1,5 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Layer } from 'effect';
-import { handle } from 'hono/vercel';
 import { createBot } from '../bot/index.js';
 import { makeBotLayer } from '../bot/services.js';
 import { getDb } from '../db/client.js';
@@ -19,4 +19,24 @@ if (missing.length > 0) {
   console.log('[init] App layer configured');
 }
 
-export default handle(app);
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const url = new URL(req.url ?? '/', `https://${req.headers.host}`);
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (value)
+      headers.set(key, Array.isArray(value) ? value.join(', ') : value);
+  }
+
+  const init: RequestInit = { method: req.method, headers };
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.body) {
+    init.body = JSON.stringify(req.body);
+  }
+
+  const response = await app.fetch(new Request(url.toString(), init));
+
+  res.status(response.status);
+  response.headers.forEach((v, k) => {
+    res.setHeader(k, v);
+  });
+  res.end(await response.text());
+}
