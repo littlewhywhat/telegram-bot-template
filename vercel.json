@@ -7,5 +7,5 @@
   "installCommand": "pnpm install",
   "devCommand": "pnpm run dev",
   "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
-  "crons": [{ "path": "/api/cron", "schedule": "0 7,19 * * *" }]
+  "crons": [{ "path": "/api/cron", "schedule": "0 7 * * *" }]
 }
