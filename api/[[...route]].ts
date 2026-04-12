@@ -5,5 +5,5 @@ import { createVercelHonoHandler } from './vercelHonoHandler.js';
 const delegate = createVercelHonoHandler(app);
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-	return delegate(req, res);
+  return delegate(req, res);
 }
