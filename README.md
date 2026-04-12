@@ -45,7 +45,6 @@ MONGODB_URI=mongodb://localhost:27017/bot-dev
 
 ```bash
 pnpm install
-pnpm run db:seed      # populate test data (optional, requires MONGODB_URI)
 vercel dev            # start local dev server
 ```
 
