@@ -3,7 +3,7 @@ export interface MeResponse {
 }
 
 export async function fetchMe(initData: string): Promise<MeResponse> {
-  const res = await fetch('/api/miniapp/me', {
+  const res = await fetch('/api/me', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ initData }),
