@@ -7,7 +7,9 @@ import { handleMessage } from '../bot/handlers/message.js';
 import { handleStart } from '../bot/handlers/start.js';
 import { createBot } from '../bot/index.js';
 import { getClient } from '../db/client.js';
+import { DbService } from '../db/services.js';
 import { ensureAppLayer, getAppLayer, REQUIRED_ENV } from './context.js';
+import { validateInitData } from './validate-init-data.js';
 
 const requireAppLayer: MiddlewareHandler = async (c, next) => {
   const ready = ensureAppLayer();
@@ -115,6 +117,30 @@ app.get('/cron', requireAppLayer, async (c) => {
 
   console.error('[cron]', Cause.squash(exit.cause));
   return c.json({ ok: false, error: 'Cron failed' }, 500);
+});
+
+app.post('/miniapp/me', requireAppLayer, async (c) => {
+  const body = await c.req.json<{ initData: string }>();
+  const tgUser = validateInitData(
+    body.initData,
+    process.env.BOT_TOKEN as string,
+  );
+  if (!tgUser) return c.json({ error: 'Unauthorized' }, 401);
+
+  const program = pipe(
+    DbService,
+    Fx.flatMap((db) => db.getUser(tgUser.id)),
+    Fx.map((user) => ({ name: user?.name ?? null })),
+  );
+
+  const exit = await Fx.runPromiseExit(
+    pipe(program, Fx.provide(getAppLayer())),
+  );
+
+  if (Exit.isSuccess(exit)) return c.json(exit.value);
+
+  console.error('[miniapp/me]', Cause.squash(exit.cause));
+  return c.json({ ok: false, error: 'Internal error' }, 500);
 });
 
 export default app;
