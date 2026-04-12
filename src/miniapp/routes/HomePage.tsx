@@ -1,5 +1,6 @@
 import { Badge, Flex, Link } from '@radix-ui/themes';
 import Hello from '@/components/Hello';
+import TelegramDebugPanel from '@/components/TelegramDebugPanel';
 
 export default function HomePage() {
   const env = import.meta.env.VITE_ENV ?? 'preview';
@@ -15,6 +16,7 @@ export default function HomePage() {
       <Hello />
       <Link href="/api/health">API Health</Link>
       <Badge>ENV: {env}</Badge>
+      <TelegramDebugPanel />
     </Flex>
   );
 }
