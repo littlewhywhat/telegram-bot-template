@@ -14,12 +14,22 @@ on:
         required: true
       WEBHOOK_SECRET:
         required: true
+      VERCEL_TOKEN:
+        required: true
+      VERCEL_ORG_ID:
+        required: true
+      VERCEL_PROJECT_ID:
+        required: true
 
 jobs:
   deploy:
     uses: ./.github/workflows/deploy-vercel.yml
     with:
       vercel_production: ${{ inputs.vercel_production }}
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   migrate:
     needs: deploy

@@ -16,3 +16,6 @@ jobs:
       MONGODB_URI: ${{ secrets.PROD_MONGODB_URI }}
       BOT_TOKEN: ${{ secrets.PROD_BOT_TOKEN }}
       WEBHOOK_SECRET: ${{ secrets.PROD_WEBHOOK_SECRET }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
