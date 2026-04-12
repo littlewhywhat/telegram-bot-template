@@ -1,32 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchMe } from '@/lib/api';
 
-interface TelegramUserState {
-  name: string | null;
-  loading: boolean;
+function getInitData(): string | undefined {
+  return window.Telegram?.WebApp.initData || undefined;
 }
 
-export default function useTelegramUser(): TelegramUserState {
-  const [state, setState] = useState<TelegramUserState>({
-    name: null,
-    loading: true,
+export default function useTelegramUser() {
+  const initData = getInitData();
+
+  const query = useQuery({
+    queryKey: ['me'],
+    queryFn: () => fetchMe(initData as string),
+    enabled: !!initData,
   });
 
-  useEffect(() => {
-    const initData = window.Telegram?.WebApp.initData;
-    if (!initData) {
-      setState({ name: null, loading: false });
-      return;
-    }
-
-    fetch('/api/miniapp/me', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ initData }),
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setState({ name: data?.name ?? null, loading: false }))
-      .catch(() => setState({ name: null, loading: false }));
-  }, []);
-
-  return state;
+  return {
+    name: query.data?.name ?? null,
+    loading: query.isLoading && !!initData,
+    error: query.error,
+    isFetching: query.isFetching,
+    refetch: query.refetch,
+    initData,
+  };
 }
