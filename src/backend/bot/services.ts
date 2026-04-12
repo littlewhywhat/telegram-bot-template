@@ -1,4 +1,4 @@
-import { Context, Effect as Fx, Layer } from 'effect';
+import { Context, Effect as Fx } from 'effect';
 import type { Bot } from 'grammy';
 import { BotError } from './errors.js';
 
@@ -16,8 +16,4 @@ export function makeBotService(bot: Bot): BotService {
         catch: (cause) => new BotError({ cause }),
       }),
   };
-}
-
-export function makeBotLayer(bot: Bot): Layer.Layer<BotService> {
-  return Layer.succeed(BotService, makeBotService(bot));
 }

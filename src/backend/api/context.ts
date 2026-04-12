@@ -1,10 +1,8 @@
-import { Layer } from 'effect';
+import { Effect as Fx, Layer, ManagedRuntime } from 'effect';
 import { createBot } from '../bot/index.js';
-import type { BotService } from '../bot/services.js';
-import { makeBotLayer } from '../bot/services.js';
+import { BotService, makeBotService } from '../bot/services.js';
 import { getDb } from '../db/client.js';
-import type { DbService } from '../db/services.js';
-import { makeDbLayer } from '../db/services.js';
+import { DbService, makeDbService } from '../db/services.js';
 
 export const REQUIRED_ENV = [
   'BOT_TOKEN',
@@ -12,24 +10,20 @@ export const REQUIRED_ENV = [
   'MONGODB_URI',
 ] as const;
 
-let appLayer: Layer.Layer<DbService | BotService> | null = null;
+const AppLayer = Layer.merge(
+  Layer.effect(
+    DbService,
+    Fx.sync(() => makeDbService(getDb())),
+  ),
+  Layer.effect(
+    BotService,
+    Fx.sync(() => makeBotService(createBot(process.env.BOT_TOKEN as string))),
+  ),
+);
 
-export function ensureAppLayer(): boolean {
-  if (appLayer !== null) return true;
-  const missing = REQUIRED_ENV.filter((key) => !process.env[key]);
-  if (missing.length > 0) return false;
-  const db = getDb();
-  const bot = createBot(process.env.BOT_TOKEN as string);
-  setAppLayer(Layer.merge(makeDbLayer(db), makeBotLayer(bot)));
-  return true;
-}
+export type AppRuntime = ManagedRuntime.ManagedRuntime<
+  DbService | BotService,
+  never
+>;
 
-export function setAppLayer(layer: Layer.Layer<DbService | BotService>): void {
-  appLayer = layer;
-}
-
-export function getAppLayer(): Layer.Layer<DbService | BotService> {
-  if (!appLayer)
-    throw new Error('App layer not configured. Call setAppLayer() first.');
-  return appLayer;
-}
+export const appRuntime = ManagedRuntime.make(AppLayer);

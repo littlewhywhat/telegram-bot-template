@@ -1,4 +1,4 @@
-import { Context, Effect as Fx, Layer } from 'effect';
+import { Context, Effect as Fx } from 'effect';
 import type { Db } from 'mongodb';
 import { DbError } from '../bot/errors.js';
 import { messages, users } from './collections.js';
@@ -64,8 +64,4 @@ export function makeDbService(db: Db): DbService {
         catch: (cause) => new DbError({ cause }),
       }),
   };
-}
-
-export function makeDbLayer(db: Db): Layer.Layer<DbService> {
-  return Layer.succeed(DbService, makeDbService(db));
 }

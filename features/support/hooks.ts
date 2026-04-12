@@ -1,8 +1,8 @@
 import { After, Before } from '@cucumber/cucumber';
-import { Effect, Layer } from 'effect';
-import { setAppLayer } from '../../src/backend/api/context.js';
+import { Effect as Fx, Layer, ManagedRuntime } from 'effect';
+import { createApp } from '../../src/backend/api/app.js';
 import { BotService } from '../../src/backend/bot/services.js';
-import { makeDbLayer } from '../../src/backend/db/services.js';
+import { DbService, makeDbService } from '../../src/backend/db/services.js';
 import type { BotWorld } from './world.js';
 
 Before(async function (this: BotWorld) {
@@ -12,14 +12,19 @@ Before(async function (this: BotWorld) {
 
   process.env.WEBHOOK_SECRET = 'test-secret';
 
-  const dbLayer = makeDbLayer(this.db);
-  const botLayer = Layer.succeed(BotService, {
+  const botService: BotService = {
     sendMessage: (chatId: number, text: string) =>
-      Effect.sync(() => {
+      Fx.sync(() => {
         this.sent.push({ chatId, text });
       }),
-  });
-  setAppLayer(Layer.merge(dbLayer, botLayer));
+  };
+
+  const layer = Layer.merge(
+    Layer.succeed(DbService, makeDbService(this.db)),
+    Layer.succeed(BotService, botService),
+  );
+
+  this.app = createApp(ManagedRuntime.make(layer));
 });
 
 After(async function (this: BotWorld) {
