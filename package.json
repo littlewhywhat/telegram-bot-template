@@ -11,8 +11,6 @@
     "check": "biome check --write .",
     "typecheck": "tsc --noEmit",
     "ci": "pnpm run check && pnpm run typecheck && pnpm run build",
-    "db:up": "docker compose -f docker/docker-compose.yml up -d",
-    "db:down": "docker compose -f docker/docker-compose.yml down",
     "db:seed": "tsx scripts/seed.ts",
     "db:migrate": "tsx scripts/migrate.ts",
     "bot:setup": "tsx scripts/setup-bot.ts",

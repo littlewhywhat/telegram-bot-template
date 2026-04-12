@@ -42,8 +42,8 @@ app.get('/health', async (c) => {
   const exit = await Fx.runPromiseExit(
     pipe(
       checkEnv,
-      Fx.andThen(checkDb),
-      Fx.andThen(checkBot),
+      Fx.flatMap(() => checkDb),
+      Fx.flatMap(() => checkBot),
       Fx.timeout('5 seconds'),
     ),
   );
@@ -85,7 +85,11 @@ app.post('/webhook', requireAppLayer, async (c) => {
   );
 
   const exit = await Fx.runPromiseExit(
-    pipe(validateSecret, Fx.andThen(handleUpdate), Fx.provide(getAppLayer())),
+    pipe(
+      validateSecret,
+      Fx.flatMap(() => handleUpdate),
+      Fx.provide(getAppLayer()),
+    ),
   );
 
   if (Exit.isSuccess(exit)) return c.json({ ok: true });
