@@ -9,7 +9,7 @@ export const botSettings = {
     text: 'Open App',
     web_app: { url: appUrl },
   }),
-  profilePhoto: undefined as string | undefined,
+  profilePhoto: './assets/bot-avatar.jpg' as string | undefined,
   defaultAdministratorRights: undefined as
     | {
         rights: {
