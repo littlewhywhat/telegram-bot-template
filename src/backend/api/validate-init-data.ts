@@ -18,9 +18,7 @@ export function validateInitData(
   if (!hash) return null;
 
   params.delete('hash');
-  const entries = [...params.entries()].sort(([a], [b]) =>
-    a.localeCompare(b),
-  );
+  const entries = [...params.entries()].sort(([a], [b]) => a.localeCompare(b));
   const dataCheckString = entries
     .map(([key, val]) => `${key}=${val}`)
     .join('\n');
