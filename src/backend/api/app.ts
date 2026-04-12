@@ -119,7 +119,7 @@ app.get('/cron', requireAppLayer, async (c) => {
   return c.json({ ok: false, error: 'Cron failed' }, 500);
 });
 
-app.post('/miniapp/me', requireAppLayer, async (c) => {
+app.post('/me', requireAppLayer, async (c) => {
   const body = await c.req.json<{ initData: string }>();
   const tgUser = validateInitData(
     body.initData,
@@ -139,7 +139,7 @@ app.post('/miniapp/me', requireAppLayer, async (c) => {
 
   if (Exit.isSuccess(exit)) return c.json(exit.value);
 
-  console.error('[miniapp/me]', Cause.squash(exit.cause));
+  console.error('[me]', Cause.squash(exit.cause));
   return c.json({ ok: false, error: 'Internal error' }, 500);
 });
 

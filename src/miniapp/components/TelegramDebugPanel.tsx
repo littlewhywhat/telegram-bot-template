@@ -113,7 +113,7 @@ export default function TelegramDebugPanel() {
       </DataList.Root>
 
       <Heading size="3" mt="4" mb="3">
-        Debug: API /miniapp/me
+        Debug: API /api/me
       </Heading>
 
       <DataList.Root size="2">
