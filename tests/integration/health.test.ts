@@ -1,19 +1,20 @@
-import { Layer } from 'effect';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import app from '../../src/backend/api/app.js';
-import { setAppLayer } from '../../src/backend/api/context.js';
-import { makeDbLayer } from '../../src/backend/db/services.js';
-import { createMockBotLayer } from '../helpers/mock-bot.js';
+import { createApp } from '../../src/backend/api/app.js';
+import { createMockBotService } from '../helpers/mock-bot.js';
 import { getDb, getUri, startDb, stopDb } from '../helpers/setup.js';
+import { createTestRuntime } from '../helpers/test-runtime.js';
 
 describe('GET /api/health', () => {
+  let app: ReturnType<typeof createApp>;
+
   beforeAll(async () => {
     await startDb();
     process.env.MONGODB_URI = getUri();
     process.env.BOT_TOKEN = 'test-token';
     process.env.WEBHOOK_SECRET = 'test-secret';
-    const { layer: botLayer } = createMockBotLayer();
-    setAppLayer(Layer.merge(makeDbLayer(getDb()), botLayer));
+    const { service } = createMockBotService();
+    const runtime = createTestRuntime(getDb(), service);
+    app = createApp(runtime);
   });
 
   afterAll(async () => {

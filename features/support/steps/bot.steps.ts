@@ -1,6 +1,5 @@
 import { strict as assert } from 'node:assert';
 import { Then, When } from '@cucumber/cucumber';
-import app from '../../../src/backend/api/app.js';
 import type { BotWorld } from '../world.js';
 
 When(
@@ -17,7 +16,7 @@ When(
       },
     };
 
-    await app.request('/api/webhook', {
+    await this.app.request('/api/webhook', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +33,7 @@ When('the cron job runs', async function (this: BotWorld) {
     this.mockedHour !== null
       ? `/api/cron?hour=${this.mockedHour}`
       : '/api/cron';
-  await app.request(url);
+  await this.app.request(url);
 });
 
 Then(

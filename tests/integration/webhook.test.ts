@@ -1,10 +1,8 @@
-import { Layer } from 'effect';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import app from '../../src/backend/api/app.js';
-import { setAppLayer } from '../../src/backend/api/context.js';
-import { makeDbLayer } from '../../src/backend/db/services.js';
-import { createMockBotLayer } from '../helpers/mock-bot.js';
+import { createApp } from '../../src/backend/api/app.js';
+import { createMockBotService } from '../helpers/mock-bot.js';
 import { cleanDb, getDb, startDb, stopDb } from '../helpers/setup.js';
+import { createTestRuntime } from '../helpers/test-runtime.js';
 
 function telegramUpdate(chatId: number, text: string) {
   return {
@@ -20,10 +18,13 @@ function telegramUpdate(chatId: number, text: string) {
 }
 
 describe('POST /api/webhook', () => {
+  let app: ReturnType<typeof createApp>;
+
   beforeAll(async () => {
     const db = await startDb();
-    const { layer: botLayer } = createMockBotLayer();
-    setAppLayer(Layer.merge(makeDbLayer(db), botLayer));
+    const { service } = createMockBotService();
+    const runtime = createTestRuntime(db, service);
+    app = createApp(runtime);
     process.env.WEBHOOK_SECRET = 'test-secret';
   });
 

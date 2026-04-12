@@ -1,4 +1,5 @@
 import { setWorldConstructor, World } from '@cucumber/cucumber';
+import type { Hono } from 'hono';
 import { type Db, MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import type { SentMessage } from '../../tests/helpers/mock-bot.js';
@@ -9,6 +10,7 @@ export class BotWorld extends World {
   db!: Db;
   sent: SentMessage[] = [];
   mockedHour: number | null = null;
+  app!: Hono;
 
   async startDb(): Promise<void> {
     this.mongod = await MongoMemoryServer.create();
