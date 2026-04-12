@@ -11,22 +11,101 @@ if (!token || !url || !secret) {
   process.exit(1);
 }
 
-async function callApi(method: string, body: Record<string, unknown>) {
+async function callApi(method: string, body?: Record<string, unknown>) {
   const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body ?? {}),
   });
   const json = await res.json();
   if (!json.ok) {
     console.error(`${method} failed:`, json.description);
     process.exit(1);
   }
-  return json;
+  return json.result;
 }
 
-async function uploadProfilePhoto(filePath: string) {
-  const resolved = path.resolve(filePath);
+function deepEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (typeof a !== typeof b) return false;
+  if (typeof a !== 'object') return false;
+  const aObj = a as Record<string, unknown>;
+  const bObj = b as Record<string, unknown>;
+  const keys = new Set([...Object.keys(aObj), ...Object.keys(bObj)]);
+  for (const key of keys) {
+    if (!deepEqual(aObj[key], bObj[key])) return false;
+  }
+  return true;
+}
+
+async function setIfChanged<T>(
+  label: string,
+  getCurrent: () => Promise<T>,
+  desired: T,
+  apply: () => Promise<unknown>,
+  compare: (current: T, desired: T) => boolean = deepEqual,
+) {
+  const current = await getCurrent();
+  if (compare(current, desired)) {
+    console.log(`${label} — unchanged, skipped`);
+    return;
+  }
+  await apply();
+  console.log(`${label} — updated`);
+}
+
+const webhookUrl = `${url}/api/webhook`;
+const webhookInfo = await callApi('getWebhookInfo');
+if (webhookInfo.url === webhookUrl) {
+  console.log('Webhook — unchanged, skipped');
+} else {
+  await callApi('setWebhook', { url: webhookUrl, secret_token: secret });
+  console.log('Webhook — updated');
+}
+
+await setIfChanged(
+  'Bot name',
+  async () => (await callApi('getMyName')).name as string,
+  botSettings.name,
+  () => callApi('setMyName', { name: botSettings.name }),
+);
+
+await setIfChanged(
+  'Bot description',
+  async () => (await callApi('getMyDescription')).description as string,
+  botSettings.description,
+  () => callApi('setMyDescription', { description: botSettings.description }),
+);
+
+await setIfChanged(
+  'Bot short description',
+  async () =>
+    (await callApi('getMyShortDescription')).short_description as string,
+  botSettings.shortDescription,
+  () =>
+    callApi('setMyShortDescription', {
+      short_description: botSettings.shortDescription,
+    }),
+);
+
+await setIfChanged(
+  'Commands',
+  () => callApi('getMyCommands'),
+  botSettings.commands,
+  () => callApi('setMyCommands', { commands: botSettings.commands }),
+);
+
+const desiredMenuButton = botSettings.menuButton(url);
+await setIfChanged(
+  'Menu button',
+  () => callApi('getChatMenuButton'),
+  desiredMenuButton,
+  () => callApi('setChatMenuButton', { menu_button: desiredMenuButton }),
+);
+
+if (botSettings.profilePhoto) {
+  const resolved = path.resolve(botSettings.profilePhoto);
   const fileBuffer = fs.readFileSync(resolved);
   const fileName = path.basename(resolved);
 
@@ -50,45 +129,17 @@ async function uploadProfilePhoto(filePath: string) {
     console.error('setMyProfilePhoto failed:', json.description);
     process.exit(1);
   }
-  return json;
-}
-
-await callApi('setWebhook', {
-  url: `${url}/api/webhook`,
-  secret_token: secret,
-});
-console.log('Webhook set');
-
-await callApi('setMyName', { name: botSettings.name });
-console.log('Bot name set');
-
-await callApi('setMyDescription', { description: botSettings.description });
-console.log('Bot description set');
-
-await callApi('setMyShortDescription', {
-  short_description: botSettings.shortDescription,
-});
-console.log('Bot short description set');
-
-await callApi('setMyCommands', { commands: botSettings.commands });
-console.log('Commands set');
-
-await callApi('setChatMenuButton', {
-  menu_button: botSettings.menuButton(url),
-});
-console.log('Menu button set');
-
-if (botSettings.profilePhoto) {
-  await uploadProfilePhoto(botSettings.profilePhoto);
-  console.log('Profile photo set');
+  console.log('Profile photo — updated');
 }
 
 if (botSettings.defaultAdministratorRights) {
-  await callApi('setMyDefaultAdministratorRights', {
-    rights: botSettings.defaultAdministratorRights.rights,
-    for_channels: botSettings.defaultAdministratorRights.for_channels,
-  });
-  console.log('Default administrator rights set');
+  const { rights, for_channels } = botSettings.defaultAdministratorRights;
+  await setIfChanged(
+    'Default administrator rights',
+    () => callApi('getMyDefaultAdministratorRights'),
+    rights,
+    () => callApi('setMyDefaultAdministratorRights', { rights, for_channels }),
+  );
 }
 
 console.log('Bot setup complete');
