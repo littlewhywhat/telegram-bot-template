@@ -1,0 +1,56 @@
+name: Deploy Telegram Bot
+
+on:
+  workflow_call:
+    inputs:
+      vercel_production:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      MONGODB_URI:
+        required: true
+      BOT_TOKEN:
+        required: true
+      WEBHOOK_SECRET:
+        required: true
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-vercel.yml
+    with:
+      vercel_production: ${{ inputs.vercel_production }}
+
+  migrate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile --no-optional
+      - name: Run migrations
+        run: pnpm run db:migrate
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+
+  setup-bot:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile --no-optional
+      - name: Setup bot
+        run: pnpm run bot:setup
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          WEBHOOK_URL: ${{ needs.deploy.outputs.url }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
