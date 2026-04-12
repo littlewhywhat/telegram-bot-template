@@ -27,6 +27,7 @@ graph TD
 - Collect services at the top: `Fx.all({ db: DbService, bot: BotService })`
 - Carry context forward: `Fx.map(effect, (val) => ({ ...ctx, val }))` to extend the pipe context
 - Conditionals via `Fx.if` / `Fx.when` — never JS if/else/ternary inside pipes
+- Sequencing: `Fx.flatMap(() => next)` — never `Fx.andThen`
 - Guard/short-circuit: `Fx.when(Fx.succeed(ctx), () => condition)` + `Fx.flatten`
 - One exported function per handler — extract pure helpers outside only when reused across files
 
