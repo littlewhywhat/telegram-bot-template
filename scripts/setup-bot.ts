@@ -35,59 +35,54 @@ const program = pipe(
       syncSetting({
         token: env.token,
         label: 'Webhook',
-        getMethod: 'getWebhookInfo',
-        extractCurrent: (r: unknown) => (r as { url: string }).url,
+        get: 'getWebhookInfo',
+        set: 'setWebhook',
         desired: `${env.url}/api/webhook`,
-        setMethod: 'setWebhook',
-        setBody: {
-          url: `${env.url}/api/webhook`,
-          secret_token: env.secret,
-        },
+        body: { url: `${env.url}/api/webhook`, secret_token: env.secret },
+        extract: (r: unknown) => (r as { url: string }).url,
       }),
       Fx.flatMap(() =>
         syncSetting({
           token: env.token,
           label: 'Bot name',
-          getMethod: 'getMyName',
-          extractCurrent: (r: unknown) => (r as { name: string }).name,
+          get: 'getMyName',
+          set: 'setMyName',
           desired: botSettings.name,
-          setMethod: 'setMyName',
-          setBody: { name: botSettings.name },
+          body: { name: botSettings.name },
+          extract: (r: unknown) => (r as { name: string }).name,
         }),
       ),
       Fx.flatMap(() =>
         syncSetting({
           token: env.token,
           label: 'Bot description',
-          getMethod: 'getMyDescription',
-          extractCurrent: (r: unknown) =>
-            (r as { description: string }).description,
+          get: 'getMyDescription',
+          set: 'setMyDescription',
           desired: botSettings.description,
-          setMethod: 'setMyDescription',
-          setBody: { description: botSettings.description },
+          body: { description: botSettings.description },
+          extract: (r: unknown) => (r as { description: string }).description,
         }),
       ),
       Fx.flatMap(() =>
         syncSetting({
           token: env.token,
           label: 'Bot short description',
-          getMethod: 'getMyShortDescription',
-          extractCurrent: (r: unknown) =>
-            (r as { short_description: string }).short_description,
+          get: 'getMyShortDescription',
+          set: 'setMyShortDescription',
           desired: botSettings.shortDescription,
-          setMethod: 'setMyShortDescription',
-          setBody: { short_description: botSettings.shortDescription },
+          body: { short_description: botSettings.shortDescription },
+          extract: (r: unknown) =>
+            (r as { short_description: string }).short_description,
         }),
       ),
       Fx.flatMap(() =>
         syncSetting({
           token: env.token,
           label: 'Commands',
-          getMethod: 'getMyCommands',
-          extractCurrent: (r: unknown) => r,
+          get: 'getMyCommands',
+          set: 'setMyCommands',
           desired: botSettings.commands,
-          setMethod: 'setMyCommands',
-          setBody: { commands: botSettings.commands },
+          body: { commands: botSettings.commands },
         }),
       ),
       Fx.flatMap(() => {
@@ -95,11 +90,10 @@ const program = pipe(
         return syncSetting({
           token: env.token,
           label: 'Menu button',
-          getMethod: 'getChatMenuButton',
-          extractCurrent: (r: unknown) => r,
+          get: 'getChatMenuButton',
+          set: 'setChatMenuButton',
           desired,
-          setMethod: 'setChatMenuButton',
-          setBody: { menu_button: desired },
+          body: { menu_button: desired },
         });
       }),
       Fx.flatMap(() =>
@@ -120,11 +114,10 @@ const program = pipe(
             return syncSetting({
               token: env.token,
               label: 'Default administrator rights',
-              getMethod: 'getMyDefaultAdministratorRights',
-              extractCurrent: (r: unknown) => r,
+              get: 'getMyDefaultAdministratorRights',
+              set: 'setMyDefaultAdministratorRights',
               desired: rights,
-              setMethod: 'setMyDefaultAdministratorRights',
-              setBody: { rights, for_channels },
+              body: { rights, for_channels },
             });
           }),
           () => botSettings.defaultAdministratorRights != null,
