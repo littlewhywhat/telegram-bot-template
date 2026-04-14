@@ -38,29 +38,33 @@ export const callApi = (
     ),
   );
 
-interface SyncSettingConfig {
+export const syncSetting = ({
+  token,
+  label,
+  get,
+  set,
+  desired,
+  body,
+  extract = (r: unknown) => r,
+}: {
   token: string;
   label: string;
-  getMethod: string;
-  extractCurrent: (result: unknown) => unknown;
+  get: string;
+  set: string;
   desired: unknown;
-  setMethod: string;
-  setBody: Record<string, unknown>;
-}
-
-export const syncSetting = (
-  config: SyncSettingConfig,
-): Fx.Effect<void, TelegramApiError> =>
+  body: Record<string, unknown>;
+  extract?: (result: unknown) => unknown;
+}): Fx.Effect<void, TelegramApiError> =>
   pipe(
-    callApi(config.token, config.getMethod),
-    Fx.map(config.extractCurrent),
+    callApi(token, get),
+    Fx.map(extract),
     Fx.flatMap((current) =>
-      Fx.if(isDeepStrictEqual(current, config.desired), {
-        onTrue: () => Fx.log(`${config.label} — unchanged, skipped`),
+      Fx.if(isDeepStrictEqual(current, desired), {
+        onTrue: () => Fx.log(`${label} — unchanged, skipped`),
         onFalse: () =>
           pipe(
-            callApi(config.token, config.setMethod, config.setBody),
-            Fx.flatMap(() => Fx.log(`${config.label} — updated`)),
+            callApi(token, set, body),
+            Fx.flatMap(() => Fx.log(`${label} — updated`)),
           ),
       }),
     ),
