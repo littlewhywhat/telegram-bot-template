@@ -16,6 +16,7 @@
     "test": "pnpm run test:integration && pnpm run test:e2e",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "cucumber-js",
+    "test:ui": "pnpm run build && playwright test",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -32,6 +33,8 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.11",
     "@cucumber/cucumber": "^12.7.0",
+    "@hono/node-server": "^1.19.14",
+    "@playwright/test": "^1.59.1",
     "@types/node": "^22.19.17",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
