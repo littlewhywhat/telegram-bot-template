@@ -3,6 +3,10 @@ name: Deploy Production
 on:
   workflow_dispatch:
 
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 jobs:
   ci:
     uses: ./.github/workflows/ci.yml
@@ -12,6 +16,7 @@ jobs:
     uses: ./.github/workflows/deploy-tg-bot.yml
     with:
       vercel_production: true
+      environment_name: production
     secrets:
       MONGODB_URI: ${{ secrets.PROD_MONGODB_URI }}
       BOT_TOKEN: ${{ secrets.PROD_BOT_TOKEN }}

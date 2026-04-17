@@ -7,6 +7,9 @@ on:
         required: false
         type: boolean
         default: false
+      environment_name:
+        required: false
+        type: string
     secrets:
       VERCEL_TOKEN:
         required: true
@@ -21,6 +24,7 @@ on:
 jobs:
   deploy-vercel:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
     outputs:
       url: ${{ steps.vercel.outputs.url }}
     steps:

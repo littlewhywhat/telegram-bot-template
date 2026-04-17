@@ -4,6 +4,10 @@ on:
   push:
     branches: [develop]
 
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
 jobs:
   ci:
     uses: ./.github/workflows/ci.yml
@@ -11,6 +15,8 @@ jobs:
   deploy:
     needs: ci
     uses: ./.github/workflows/deploy-tg-bot.yml
+    with:
+      environment_name: staging
     secrets:
       MONGODB_URI: ${{ secrets.STAGING_MONGODB_URI }}
       BOT_TOKEN: ${{ secrets.STAGING_BOT_TOKEN }}
