@@ -8,7 +8,7 @@ runs:
         node-version-file: .nvmrc
         cache: 'pnpm'
     - shell: bash
-      run: pnpm install --frozen-lockfile ${{ inputs.full_install == 'true' && '' || '--no-optional' }}
+      run: pnpm install --frozen-lockfile ${{ inputs.full_install != 'true' && '--no-optional' || '' }}
 inputs:
   full_install:
     required: false
