@@ -1,0 +1,44 @@
+name: Deploy Vercel
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: false
+        type: string
+    secrets:
+      VERCEL_TOKEN:
+        required: true
+      VERCEL_ORG_ID:
+        required: true
+      VERCEL_PROJECT_ID:
+        required: true
+    outputs:
+      url:
+        value: ${{ jobs.deploy-vercel.outputs.url }}
+
+jobs:
+  deploy-vercel:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    outputs:
+      url: ${{ steps.vercel.outputs.url }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Deploy to Vercel
+        id: vercel
+        run: |
+          VERCEL_ENV=${{ inputs.environment_name == 'production' && 'production' || 'preview' }}
+          PROD_FLAG=${{ inputs.environment_name == 'production' && '--prod' || '' }}
+          npx vercel pull --yes --environment=$VERCEL_ENV --token=${{ secrets.VERCEL_TOKEN }}
+          npx vercel build $PROD_FLAG --token=${{ secrets.VERCEL_TOKEN }}
+          URL=$(npx vercel deploy --prebuilt $PROD_FLAG --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Smoke test
+        run: curl -sf "${{ steps.vercel.outputs.url }}/api/health"

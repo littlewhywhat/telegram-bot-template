@@ -1,0 +1,17 @@
+name: Deploy PR
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  deploy:
+    if: github.event.label.name == 'deploy-staging'
+    uses: ./.github/workflows/_deploy-tg-bot.yml
+    secrets:
+      MONGODB_URI: ${{ secrets.STAGING_MONGODB_URI }}
+      BOT_TOKEN: ${{ secrets.STAGING_BOT_TOKEN }}
+      WEBHOOK_SECRET: ${{ secrets.STAGING_WEBHOOK_SECRET }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

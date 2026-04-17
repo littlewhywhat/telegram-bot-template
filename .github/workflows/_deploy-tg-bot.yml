@@ -1,0 +1,57 @@
+name: Deploy Telegram Bot
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: false
+        type: string
+    secrets:
+      MONGODB_URI:
+        required: true
+      BOT_TOKEN:
+        required: true
+      WEBHOOK_SECRET:
+        required: true
+      VERCEL_TOKEN:
+        required: true
+      VERCEL_ORG_ID:
+        required: true
+      VERCEL_PROJECT_ID:
+        required: true
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/_deploy-vercel.yml
+    with:
+      environment_name: ${{ inputs.environment_name }}
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  migrate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-pnpm
+      - name: Run migrations
+        run: pnpm run db:migrate
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+
+  setup-bot:
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-pnpm
+      - name: Setup bot
+        run: pnpm run bot:setup
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          WEBHOOK_URL: ${{ needs.deploy.outputs.url }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}

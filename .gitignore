@@ -3,5 +3,10 @@ dist
 .env*
 .vercel
 !.env.example
+!.env.test
 .DS_Store
 tsconfig.tsbuildinfo
+.env*.local
+playwright-report
+test-results
+playwright/.cache

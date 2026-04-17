@@ -1,10 +1,9 @@
-import { handle } from '@hono/node-server/vercel';
-import { Hono } from 'hono';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import app from '../src/backend/api/app.js';
+import { createVercelHonoHandler } from './vercelHonoHandler.js';
 
-const app = new Hono().basePath('/api');
+const delegate = createVercelHonoHandler(app);
 
-app.get('/health', (c) =>
-  c.json({ status: 'ok', time: new Date().toISOString() }),
-);
-
-export default handle(app);
+export default function handler(req: VercelRequest, res: VercelResponse) {
+  return delegate(req, res);
+}

@@ -10,8 +10,8 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] },
+    "paths": { "@/*": ["src/miniapp/*"] },
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "api"]
+  "include": ["src", "api", "scripts", "tests", "features"]
 }

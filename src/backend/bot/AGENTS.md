@@ -2,7 +2,6 @@
 
 ## Rules
 
-- Pipe syntax with `Effect.flatMap` / `Effect.tap` — never generators/yield
 - Handlers are Effect programs, not grammY middleware
 - Handlers follow collect → decide → execute: gather all context from services first, then determine the action, then execute and respond
 

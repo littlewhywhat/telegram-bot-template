@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: path.resolve(__dirname, './src'),
+  root: path.resolve(__dirname, './src/miniapp'),
   publicDir: path.resolve(__dirname, './public'),
   build: {
     outDir: path.resolve(__dirname, 'dist'),
@@ -12,7 +12,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './src/miniapp'),
     },
   },
 });
