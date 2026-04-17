@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     if: github.event.label.name == 'deploy-staging'
-    uses: ./.github/workflows/deploy-tg-bot.yml
+    uses: ./.github/workflows/_deploy-tg-bot.yml
     secrets:
       MONGODB_URI: ${{ secrets.STAGING_MONGODB_URI }}
       BOT_TOKEN: ${{ secrets.STAGING_BOT_TOKEN }}

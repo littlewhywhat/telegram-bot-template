@@ -11,58 +11,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-pnpm
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+          full_install: true
       - run: pnpm biome ci .
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-pnpm
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+          full_install: true
       - run: pnpm run typecheck
 
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-pnpm
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+          full_install: true
       - run: pnpm run build
 
   test-integration:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-pnpm
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+          full_install: true
       - run: pnpm run test:integration
 
   test-e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
+      - uses: ./.github/actions/setup-pnpm
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+          full_install: true
       - run: pnpm run test:e2e
