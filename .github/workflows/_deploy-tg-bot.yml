@@ -3,10 +3,9 @@ name: Deploy Telegram Bot
 on:
   workflow_call:
     inputs:
-      vercel_production:
+      environment_name:
         required: false
-        type: boolean
-        default: false
+        type: string
     secrets:
       MONGODB_URI:
         required: true
@@ -23,9 +22,9 @@ on:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-vercel.yml
+    uses: ./.github/workflows/_deploy-vercel.yml
     with:
-      vercel_production: ${{ inputs.vercel_production }}
+      environment_name: ${{ inputs.environment_name }}
     secrets:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -34,14 +33,10 @@ jobs:
   migrate:
     needs: deploy
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile --no-optional
+      - uses: ./.github/actions/setup-pnpm
       - name: Run migrations
         run: pnpm run db:migrate
         env:
@@ -50,14 +45,10 @@ jobs:
   setup-bot:
     needs: deploy
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile --no-optional
+      - uses: ./.github/actions/setup-pnpm
       - name: Setup bot
         run: pnpm run bot:setup
         env:

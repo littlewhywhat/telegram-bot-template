@@ -3,10 +3,9 @@ name: Deploy Vercel
 on:
   workflow_call:
     inputs:
-      vercel_production:
+      environment_name:
         required: false
-        type: boolean
-        default: false
+        type: string
     secrets:
       VERCEL_TOKEN:
         required: true
@@ -21,22 +20,18 @@ on:
 jobs:
   deploy-vercel:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
     outputs:
       url: ${{ steps.vercel.outputs.url }}
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile --no-optional
+      - uses: ./.github/actions/setup-pnpm
 
       - name: Deploy to Vercel
         id: vercel
         run: |
-          VERCEL_ENV=${{ inputs.vercel_production && 'production' || 'preview' }}
-          PROD_FLAG=${{ inputs.vercel_production && '--prod' || '' }}
+          VERCEL_ENV=${{ inputs.environment_name == 'production' && 'production' || 'preview' }}
+          PROD_FLAG=${{ inputs.environment_name == 'production' && '--prod' || '' }}
           npx vercel pull --yes --environment=$VERCEL_ENV --token=${{ secrets.VERCEL_TOKEN }}
           npx vercel build $PROD_FLAG --token=${{ secrets.VERCEL_TOKEN }}
           URL=$(npx vercel deploy --prebuilt $PROD_FLAG --token=${{ secrets.VERCEL_TOKEN }})
