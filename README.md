@@ -64,9 +64,11 @@ pnpm run test:watch        # vitest watch mode
 
 All tests use `mongodb-memory-server` — no Docker or external DB required.
 
-## 6. Deploy
+Add the `e2e` label to run e2e tests on PR
 
-- Push to `develop` → deploys to staging automatically
-- PRs → add the `deploy-staging` label to deploy a preview
+## 5. Deploy
+
+- Push to `develop` → deploys to Vercel Preview automatically
+- PRs → add the `deploy-staging` label to deploy PR to Vercel Preview
 - **Release Prepare** (manual) → bumps version, updates changelog, creates `vX.Y.Z` tag on `develop`
-- **Deploy Production** (manual, on a `vX.Y.Z` tag) → runs CI then deploys to production
+- **Deploy Production** (manual, on a `vX.Y.Z` tag) → runs CI then deploys to Vercel Production
