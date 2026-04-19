@@ -19,3 +19,8 @@ Feature: Name onboarding
     When the user sends " " from chatId 789
     Then the bot replies "Please tell me your name." to chatId 789
     And the user with chatId 789 has state "awaiting_name"
+
+  Scenario: User sends message without starting first
+    Given no user exists with chatId 999
+    When the user sends "Hello" from chatId 999
+    Then the bot does not send a message to chatId 999
