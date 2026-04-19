@@ -36,22 +36,26 @@ Save both tokens.
 
 ## 3. Setup Secrets
 
-| Secret | Purpose | Environment | Vercel | GitHub |
-|--------|---------|-------------|--------|--------|
-| `GH_PAT` | Personal access token with `contents: write` for **Release Prepare** | all | | ✓ |
-| `VERCEL_TOKEN` | Vercel deploy token | all | | ✓ |
-| `VERCEL_ORG_ID` | Vercel org ID | all | | ✓ |
-| `VERCEL_PROJECT_ID` | Vercel project ID | all | | ✓ |
-| `STAGING_BOT_TOKEN` | Telegram bot token | staging | | ✓ |
-| `STAGING_WEBHOOK_SECRET` | Webhook secret for signature verification | staging | | ✓ |
-| `STAGING_MONGODB_URI` | MongoDB connection string | staging | | ✓ |
-| `PROD_BOT_TOKEN` | Telegram bot token | production | | ✓ |
-| `PROD_WEBHOOK_SECRET` | Webhook secret for signature verification | production | | ✓ |
-| `PROD_MONGODB_URI` | MongoDB connection string | production | | ✓ |
-| `BOT_TOKEN` | Telegram bot token | preview + production | ✓ | |
-| `WEBHOOK_SECRET` | Webhook secret for signature verification | preview + production | ✓ | |
-| `MONGODB_URI` | MongoDB connection string | preview + production | ✓ | |
-| `VITE_ENV` | `preview` or `production` | preview + production | ✓ | |
+| Purpose | Environment | Vercel | GitHub |
+|---------|-------------|--------|--------|
+| GitHub PAT (`contents: write`) for **Release Prepare** | all | | `GH_PAT` |
+| Vercel deploy token | all | | `VERCEL_TOKEN` |
+| Vercel org ID | all | | `VERCEL_ORG_ID` |
+| Vercel project ID | all | | `VERCEL_PROJECT_ID` |
+| Telegram bot token | staging | | `STAGING_BOT_TOKEN` |
+| Webhook secret | staging | | `STAGING_WEBHOOK_SECRET` |
+| MongoDB connection string | staging | | `STAGING_MONGODB_URI` |
+| Telegram bot token | production | | `PROD_BOT_TOKEN` |
+| Webhook secret | production | | `PROD_WEBHOOK_SECRET` |
+| MongoDB connection string | production | | `PROD_MONGODB_URI` |
+| Telegram bot token | preview | `BOT_TOKEN` | |
+| Telegram bot token | production | `BOT_TOKEN` | |
+| Webhook secret | preview | `WEBHOOK_SECRET` | |
+| Webhook secret | production | `WEBHOOK_SECRET` | |
+| MongoDB connection string | preview | `MONGODB_URI` | |
+| MongoDB connection string | production | `MONGODB_URI` | |
+| Frontend environment flag | preview | `VITE_ENV` = `preview` | |
+| Frontend environment flag | production | `VITE_ENV` = `production` | |
 
 ## 4. Run Tests
 
