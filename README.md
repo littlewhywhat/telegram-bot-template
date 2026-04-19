@@ -31,7 +31,7 @@ Save both tokens.
 
 1. Create a cluster (e.g. free M0 at [mongodb.com/atlas](https://www.mongodb.com/atlas))
 2. Allow `0.0.0.0/0` in Network Access (required for Vercel serverless)
-3. Create two databases (staging + production) and copy connection strings
+3. Create two databases and two users with Read/Write access respectively (staging + production) and copy connection strings
 
 ## 2. Setup Vercel
 
