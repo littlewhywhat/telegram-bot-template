@@ -25,6 +25,8 @@ Save both tokens.
 5. Copy the connection string, append your database name: `mongodb+srv://user:pass@cluster.mongodb.net/mybot`
 6. Create separate databases for staging and production
 
+## 2. Setup Vercel
+
 ## 3. Setup Secrets
 
 ### GitHub
@@ -38,23 +40,21 @@ Save both tokens.
 | `PROD_MONGODB_URI` | MongoDB connection string for production |
 | `PROD_BOT_TOKEN` | Telegram bot token for production |
 | `PROD_WEBHOOK_SECRET` | Webhook secret for production |
-
-### Vercel
-
-| Secret | Purpose |
-|--------|---------|
 | `VERCEL_TOKEN` | Vercel deploy token |
 | `VERCEL_ORG_ID` | Vercel org ID |
 | `VERCEL_PROJECT_ID` | Vercel project ID |
 
-## 4. Install and Run
+### Vercel
 
-```bash
-pnpm install
-vercel dev            # start local dev server
-```
+| Environment Variable | Purpose |
+|----------------------|---------|
+| `BOT_TOKEN` | Telegram bot token |
+| `WEBHOOK_SECRET` | Webhook secret for signature verification |
+| `MONGODB_URI` | MongoDB connection string |
+| `VITE_ENV` | `preview` for staging, `production` for production |
 
-## 5. Run Tests
+
+## 4. Run Tests
 
 ```bash
 pnpm test                  # all tests
