@@ -31,8 +31,8 @@ Save both tokens.
 2. Set Framework Preset to **Other**
 3. Disable git-based deployments (handled by GitHub Actions via `vercel.json`)
 4. Copy **Project ID** and **Org ID** from Project Settings → General
-5. Create a deploy token at [vercel.com/account/tokens](https://vercel.com/account/tokens)
-6. Add environment variables (`BOT_TOKEN`, `WEBHOOK_SECRET`, `MONGODB_URI`) for both Preview and Production scopes
+5. Get a deploy token from [vercel.com/account/tokens](https://vercel.com/account/tokens) (one token works for all projects)
+6. Add environment variables for both Preview and Production scopes (see [Vercel secrets](#vercel))
 
 ## 3. Setup Secrets
 
