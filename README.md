@@ -59,8 +59,24 @@ pnpm run test:watch        # vitest watch mode
 
 All tests use `mongodb-memory-server` — no Docker or external DB required.
 
-## 6. Deploy
+## 6. GitHub Secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `GH_PAT` | Personal access token with `contents: write` — used by the **Release Prepare** workflow to push the version commit and tag to `develop` |
+| `VERCEL_TOKEN` | Vercel deploy token |
+| `VERCEL_ORG_ID` | Vercel org ID |
+| `VERCEL_PROJECT_ID` | Vercel project ID |
+| `STAGING_MONGODB_URI` | MongoDB connection string for staging |
+| `STAGING_BOT_TOKEN` | Telegram bot token for staging |
+| `STAGING_WEBHOOK_SECRET` | Webhook secret for staging |
+| `PROD_MONGODB_URI` | MongoDB connection string for production |
+| `PROD_BOT_TOKEN` | Telegram bot token for production |
+| `PROD_WEBHOOK_SECRET` | Webhook secret for production |
+
+## 7. Deploy
 
 - Push to `develop` → deploys to staging automatically
-- Production (`main`) → requires manual workflow trigger
 - PRs → add the `deploy-staging` label to deploy a preview
+- **Release Prepare** (manual) → bumps version, updates changelog, creates `vX.Y.Z` tag on `develop`
+- **Deploy Production** (manual, on a `vX.Y.Z` tag) → runs CI then deploys to production
