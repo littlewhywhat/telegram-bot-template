@@ -36,6 +36,8 @@ Save both tokens.
 
 ## 3. Setup Secrets
 
+Staging in GitHub corresponds to **Preview** scope in Vercel.
+
 | Purpose | Environment | Vercel | GitHub |
 |---------|-------------|--------|--------|
 | GitHub PAT (`contents: write`) for **Release Prepare** | all | | `GH_PAT` |
