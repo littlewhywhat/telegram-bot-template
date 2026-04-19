@@ -42,19 +42,13 @@ Save both tokens.
 | Vercel deploy token | all | | `VERCEL_TOKEN` |
 | Vercel org ID | all | | `VERCEL_ORG_ID` |
 | Vercel project ID | all | | `VERCEL_PROJECT_ID` |
-| Telegram bot token | staging | | `STAGING_BOT_TOKEN` |
-| Webhook secret | staging | | `STAGING_WEBHOOK_SECRET` |
-| MongoDB connection string | staging | | `STAGING_MONGODB_URI` |
-| Telegram bot token | production | | `PROD_BOT_TOKEN` |
-| Webhook secret | production | | `PROD_WEBHOOK_SECRET` |
-| MongoDB connection string | production | | `PROD_MONGODB_URI` |
-| Telegram bot token | preview | `BOT_TOKEN` | |
-| Telegram bot token | production | `BOT_TOKEN` | |
-| Webhook secret | preview | `WEBHOOK_SECRET` | |
-| Webhook secret | production | `WEBHOOK_SECRET` | |
-| MongoDB connection string | preview | `MONGODB_URI` | |
-| MongoDB connection string | production | `MONGODB_URI` | |
-| Frontend environment flag | preview | `VITE_ENV` = `preview` | |
+| Telegram bot token | staging | `BOT_TOKEN` | `STAGING_BOT_TOKEN` |
+| Webhook secret | staging | `WEBHOOK_SECRET` | `STAGING_WEBHOOK_SECRET` |
+| MongoDB connection string | staging | `MONGODB_URI` | `STAGING_MONGODB_URI` |
+| Telegram bot token | production | `BOT_TOKEN` | `PROD_BOT_TOKEN` |
+| Webhook secret | production | `WEBHOOK_SECRET` | `PROD_WEBHOOK_SECRET` |
+| MongoDB connection string | production | `MONGODB_URI` | `PROD_MONGODB_URI` |
+| Frontend environment flag | staging | `VITE_ENV` = `preview` | |
 | Frontend environment flag | production | `VITE_ENV` = `production` | |
 
 ## 4. Run Tests
