@@ -27,14 +27,11 @@ console.log(`yourprefix_stag_${crypto.randomUUID().slice(0,5)}_bot`)
 
 Save both tokens.
 
-## 2. Setup MongoDB Atlas
+## 2. Setup MongoDB
 
-1. Create a free account at [mongodb.com/atlas](https://www.mongodb.com/atlas)
-2. Create a free M0 cluster
-3. Create a database user with read/write access
-4. Under Network Access, allow `0.0.0.0/0` (required for Vercel serverless)
-5. Copy the connection string, append your database name: `mongodb+srv://user:pass@cluster.mongodb.net/mybot`
-6. Create separate databases for staging and production
+1. Create a cluster (e.g. free M0 at [mongodb.com/atlas](https://www.mongodb.com/atlas))
+2. Allow `0.0.0.0/0` in Network Access (required for Vercel serverless)
+3. Create two databases (staging + production) and copy connection strings
 
 ## 2. Setup Vercel
 
