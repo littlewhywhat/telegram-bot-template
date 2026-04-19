@@ -29,9 +29,12 @@ Save both tokens.
 
 ## 2. Setup MongoDB
 
-1. Create a cluster (e.g. free M0 at [mongodb.com/atlas](https://www.mongodb.com/atlas))
-2. Allow `0.0.0.0/0` in Network Access (required for Vercel serverless)
-3. Create two databases (staging + production) and copy connection strings
+Database users are created via `terraform-littlewhywhat/mongodb-atlas.tf`. To get connection strings:
+
+```bash
+cd terraform-littlewhywhat
+terraform output -json telegram_bot_db_connection_strings
+```
 
 ## 2. Setup Vercel
 
