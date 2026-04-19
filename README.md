@@ -62,7 +62,7 @@ Staging in GitHub corresponds to **Preview** scope in Vercel.
 | Telegram bot token | production | `BOT_TOKEN` | `PROD_BOT_TOKEN` |
 | Webhook secret | production | `WEBHOOK_SECRET` | `PROD_WEBHOOK_SECRET` |
 | MongoDB connection string | production | `MONGODB_URI` | `PROD_MONGODB_URI` |
-| Frontend environment flag | staging | `VITE_ENV` = `preview` | |
+| Frontend environment flag | staging | `VITE_ENV` = `preview` (by default) | |
 | Frontend environment flag | production | `VITE_ENV` = `production` | |
 
 ## 4. Run Tests
