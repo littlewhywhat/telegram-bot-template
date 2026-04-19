@@ -32,33 +32,26 @@ Save both tokens.
 3. Disable git-based deployments (handled by GitHub Actions via `vercel.json`)
 4. Copy **Project ID** and **Org ID** from Project Settings → General
 5. Get a deploy token from [vercel.com/account/tokens](https://vercel.com/account/tokens) (one token works for all projects)
-6. Add environment variables for both Preview and Production scopes (see [Vercel secrets](#vercel))
+6. Add environment variables for both Preview (Staging) and Production scopes (see [Vercel secrets](#vercel))
 
 ## 3. Setup Secrets
 
-### GitHub
-
-| Secret | Purpose |
-|--------|---------|
-| `GH_PAT` | Personal access token with `contents: write` — used by the **Release Prepare** workflow to push the version commit and tag to `develop` |
-| `STAGING_MONGODB_URI` | MongoDB connection string for staging |
-| `STAGING_BOT_TOKEN` | Telegram bot token for staging |
-| `STAGING_WEBHOOK_SECRET` | Webhook secret for staging |
-| `PROD_MONGODB_URI` | MongoDB connection string for production |
-| `PROD_BOT_TOKEN` | Telegram bot token for production |
-| `PROD_WEBHOOK_SECRET` | Webhook secret for production |
-| `VERCEL_TOKEN` | Vercel deploy token |
-| `VERCEL_ORG_ID` | Vercel org ID |
-| `VERCEL_PROJECT_ID` | Vercel project ID |
-
-### Vercel
-
-| Environment Variable | Purpose |
-|----------------------|---------|
-| `BOT_TOKEN` | Telegram bot token |
-| `WEBHOOK_SECRET` | Webhook secret for signature verification |
-| `MONGODB_URI` | MongoDB connection string |
-| `VITE_ENV` | `preview` for staging, `production` for production |
+| Secret | Purpose | Environment | Vercel | GitHub |
+|--------|---------|-------------|--------|--------|
+| `GH_PAT` | Personal access token with `contents: write` for **Release Prepare** | all | | ✓ |
+| `VERCEL_TOKEN` | Vercel deploy token | all | | ✓ |
+| `VERCEL_ORG_ID` | Vercel org ID | all | | ✓ |
+| `VERCEL_PROJECT_ID` | Vercel project ID | all | | ✓ |
+| `STAGING_BOT_TOKEN` | Telegram bot token | staging | | ✓ |
+| `STAGING_WEBHOOK_SECRET` | Webhook secret for signature verification | staging | | ✓ |
+| `STAGING_MONGODB_URI` | MongoDB connection string | staging | | ✓ |
+| `PROD_BOT_TOKEN` | Telegram bot token | production | | ✓ |
+| `PROD_WEBHOOK_SECRET` | Webhook secret for signature verification | production | | ✓ |
+| `PROD_MONGODB_URI` | MongoDB connection string | production | | ✓ |
+| `BOT_TOKEN` | Telegram bot token | preview + production | ✓ | |
+| `WEBHOOK_SECRET` | Webhook secret for signature verification | preview + production | ✓ | |
+| `MONGODB_URI` | MongoDB connection string | preview + production | ✓ | |
+| `VITE_ENV` | `preview` or `production` | preview + production | ✓ | |
 
 ## 4. Run Tests
 
