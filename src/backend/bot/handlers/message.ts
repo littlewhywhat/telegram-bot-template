@@ -13,45 +13,48 @@ export function handleMessage(chatId: number, text: string) {
     Fx.flatMap(({ db, bot }) =>
       pipe(
         db.getUser(chatId),
-        Fx.flatMap((user) =>
-          Fx.when(
-            Fx.succeed({ db, bot }),
-            () => !!user && user.state === 'awaiting_name',
-          ),
-        ),
-      ),
-    ),
-    Fx.flatten,
-    Fx.tap(({ db }) =>
-      Fx.when(
-        db.saveMessage({ chatId, direction: 'user', text, sentAt: new Date() }),
-        hasName,
-      ),
-    ),
-    Fx.tap(({ db }) =>
-      Fx.when(
-        db.upsertUser(chatId, { name: trimmed, state: 'ready' }),
-        hasName,
-      ),
-    ),
-    Fx.flatMap(({ db, bot }) =>
-      Fx.if(hasName(), {
-        onTrue: () => Fx.succeed(`Nice to meet you, ${trimmed}!`),
-        onFalse: () => Fx.succeed(PROMPT),
-      }).pipe(
-        Fx.flatMap((reply) =>
-          pipe(
-            bot.sendMessage(chatId, reply),
-            Fx.tap(() =>
+        Fx.flatMap((user) => {
+          if (!user || user.state !== 'awaiting_name') {
+            return Fx.void;
+          }
+
+          return pipe(
+            Fx.when(
               db.saveMessage({
                 chatId,
-                direction: 'bot',
-                text: reply,
+                direction: 'user',
+                text,
                 sentAt: new Date(),
               }),
+              hasName,
             ),
-          ),
-        ),
+            Fx.tap(() =>
+              Fx.when(
+                db.upsertUser(chatId, { name: trimmed, state: 'ready' }),
+                hasName,
+              ),
+            ),
+            Fx.flatMap(() =>
+              Fx.if(hasName(), {
+                onTrue: () => Fx.succeed(`Nice to meet you, ${trimmed}!`),
+                onFalse: () => Fx.succeed(PROMPT),
+              }),
+            ),
+            Fx.flatMap((reply) =>
+              pipe(
+                bot.sendMessage(chatId, reply),
+                Fx.tap(() =>
+                  db.saveMessage({
+                    chatId,
+                    direction: 'bot',
+                    text: reply,
+                    sentAt: new Date(),
+                  }),
+                ),
+              ),
+            ),
+          );
+        }),
       ),
     ),
   );
