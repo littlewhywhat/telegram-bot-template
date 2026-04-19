@@ -6,6 +6,11 @@ import {
   uploadProfilePhoto,
 } from './telegram-api.js';
 
+const botName =
+  process.env.ENVIRONMENT_NAME && process.env.ENVIRONMENT_NAME !== 'production'
+    ? `${botSettings.name} [${process.env.ENVIRONMENT_NAME.toLowerCase()}]`
+    : botSettings.name;
+
 const program = pipe(
   Fx.Do,
   Fx.flatMap(() =>
@@ -47,8 +52,8 @@ const program = pipe(
           label: 'Bot name',
           get: 'getMyName',
           set: 'setMyName',
-          desired: botSettings.name,
-          body: { name: botSettings.name },
+          desired: botName,
+          body: { name: botName },
           extract: (r: unknown) => (r as { name: string }).name,
         }),
       ),

@@ -55,3 +55,4 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           WEBHOOK_URL: ${{ needs.deploy.outputs.url }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          ENVIRONMENT_NAME: ${{ inputs.environment_name }}

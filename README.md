@@ -27,14 +27,24 @@ console.log(`yourprefix_stag_${crypto.randomUUID().slice(0,5)}_bot`)
 
 Save both tokens.
 
-## 2. Setup MongoDB Atlas
+For each bot, create a Mini App via `/newapp`. BotFather will ask for:
 
-1. Create a free account at [mongodb.com/atlas](https://www.mongodb.com/atlas)
-2. Create a free M0 cluster
-3. Create a database user with read/write access
-4. Under Network Access, allow `0.0.0.0/0` (required for Vercel serverless)
-5. Copy the connection string, append your database name: `mongodb+srv://user:pass@cluster.mongodb.net/mybot`
-6. Create separate databases for staging and production
+- **Title** and **description** — any placeholder, not used at runtime
+- **Photo** — upload `./assets/web-app-photo-640x360.jpg` from the repo
+- **Web App URL** — use any placeholder URL, overwritten on each deploy by `bot-settings.ts`
+- **Short name** — 3–30 characters, only `a-z`, `A-Z`, `0-9`, `_`. Used in `t.me/bot_username/short_name` links. Permanent.
+
+Generate a random staging short name in the browser console:
+
+```js
+console.log(`stag_${crypto.randomUUID().slice(0,5)}`)
+```
+
+## 2. Setup MongoDB
+
+1. Create a cluster (e.g. free M0 at [mongodb.com/atlas](https://www.mongodb.com/atlas))
+2. Allow `0.0.0.0/0` in Network Access (required for Vercel serverless)
+3. Create two databases and two users with Read/Write access respectively (staging + production) and copy connection strings
 
 ## 2. Setup Vercel
 
@@ -43,7 +53,8 @@ Save both tokens.
 3. Disable git-based deployments (handled by GitHub Actions via `vercel.json`)
 4. Copy **Project ID** and **Org ID** from Project Settings → General
 5. Get a deploy token from [vercel.com/account/tokens](https://vercel.com/account/tokens) (one token works for all projects)
-6. Add environment variables for both Preview (Staging) and Production scopes (see [Vercel secrets](#vercel))
+6. Disable **Deployment Protection** (Settings → Deployment Protection → set to **Off**) so Telegram webhook requests can reach the API endpoints
+7. Add environment variables for both Preview (Staging) and Production scopes (see [Vercel secrets](#vercel))
 
 ## 3. Setup Secrets
 
@@ -61,7 +72,7 @@ Staging in GitHub corresponds to **Preview** scope in Vercel.
 | Telegram bot token | production | `BOT_TOKEN` | `PROD_BOT_TOKEN` |
 | Webhook secret | production | `WEBHOOK_SECRET` | `PROD_WEBHOOK_SECRET` |
 | MongoDB connection string | production | `MONGODB_URI` | `PROD_MONGODB_URI` |
-| Frontend environment flag | staging | `VITE_ENV` = `preview` | |
+| Frontend environment flag | staging | `VITE_ENV` = `preview` (by default) | |
 | Frontend environment flag | production | `VITE_ENV` = `production` | |
 
 ## 4. Run Tests
