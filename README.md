@@ -27,6 +27,13 @@ Save both tokens.
 
 ## 2. Setup Vercel
 
+1. Create a new project at [vercel.com/new](https://vercel.com/new) and import the repo
+2. Set Framework Preset to **Other**
+3. Disable git-based deployments (handled by GitHub Actions via `vercel.json`)
+4. Copy **Project ID** and **Org ID** from Project Settings → General
+5. Create a deploy token at [vercel.com/account/tokens](https://vercel.com/account/tokens)
+6. Add environment variables (`BOT_TOKEN`, `WEBHOOK_SECRET`, `MONGODB_URI`) for both Preview and Production scopes
+
 ## 3. Setup Secrets
 
 ### GitHub
@@ -52,7 +59,6 @@ Save both tokens.
 | `WEBHOOK_SECRET` | Webhook secret for signature verification |
 | `MONGODB_URI` | MongoDB connection string |
 | `VITE_ENV` | `preview` for staging, `production` for production |
-
 
 ## 4. Run Tests
 
