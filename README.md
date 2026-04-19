@@ -25,30 +25,35 @@ Save both tokens.
 5. Copy the connection string, append your database name: `mongodb+srv://user:pass@cluster.mongodb.net/mybot`
 6. Create separate databases for staging and production
 
-## 3. Clone and Configure
+## 2. Setup Vercel
 
-```bash
-git clone <repo-url> my-bot
-cd my-bot
-cp .env.example .env
-```
+1. Create a new project at [vercel.com/new](https://vercel.com/new) and import the repo
+2. Set Framework Preset to **Other**
+3. Disable git-based deployments (handled by GitHub Actions via `vercel.json`)
+4. Copy **Project ID** and **Org ID** from Project Settings → General
+5. Get a deploy token from [vercel.com/account/tokens](https://vercel.com/account/tokens) (one token works for all projects)
+6. Add environment variables for both Preview (Staging) and Production scopes (see [Vercel secrets](#vercel))
 
-Fill in `.env`:
+## 3. Setup Secrets
 
-```
-BOT_TOKEN=<your-test-bot-token>
-WEBHOOK_SECRET=<random-string>
-MONGODB_URI=mongodb://localhost:27017/bot-dev
-```
+Staging in GitHub corresponds to **Preview** scope in Vercel.
 
-## 4. Install and Run
+| Purpose | Environment | Vercel | GitHub |
+|---------|-------------|--------|--------|
+| GitHub PAT (`contents: write`) for **Release Prepare** | all | | `GH_PAT` |
+| Vercel deploy token | all | | `VERCEL_TOKEN` |
+| Vercel org ID | all | | `VERCEL_ORG_ID` |
+| Vercel project ID | all | | `VERCEL_PROJECT_ID` |
+| Telegram bot token | staging | `BOT_TOKEN` | `STAGING_BOT_TOKEN` |
+| Webhook secret | staging | `WEBHOOK_SECRET` | `STAGING_WEBHOOK_SECRET` |
+| MongoDB connection string | staging | `MONGODB_URI` | `STAGING_MONGODB_URI` |
+| Telegram bot token | production | `BOT_TOKEN` | `PROD_BOT_TOKEN` |
+| Webhook secret | production | `WEBHOOK_SECRET` | `PROD_WEBHOOK_SECRET` |
+| MongoDB connection string | production | `MONGODB_URI` | `PROD_MONGODB_URI` |
+| Frontend environment flag | staging | `VITE_ENV` = `preview` | |
+| Frontend environment flag | production | `VITE_ENV` = `production` | |
 
-```bash
-pnpm install
-vercel dev            # start local dev server
-```
-
-## 5. Run Tests
+## 4. Run Tests
 
 ```bash
 pnpm test                  # all tests
@@ -59,8 +64,11 @@ pnpm run test:watch        # vitest watch mode
 
 All tests use `mongodb-memory-server` — no Docker or external DB required.
 
-## 6. Deploy
+Add the `e2e` label to run e2e tests on PR
 
-- Push to `develop` → deploys to staging automatically
-- Production (`main`) → requires manual workflow trigger
-- PRs → add the `deploy-staging` label to deploy a preview
+## 5. Deploy
+
+- Push to `develop` → deploys to Vercel Preview automatically
+- PRs → add the `deploy-staging` label to deploy PR to Vercel Preview
+- **Release Prepare** (manual) → bumps version, updates changelog, creates `vX.Y.Z` tag on `develop`
+- **Deploy Production** (manual, on a `vX.Y.Z` tag) → runs CI then deploys to Vercel Production
