@@ -8,7 +8,7 @@ import {
 
 const botName =
   process.env.ENVIRONMENT_NAME && process.env.ENVIRONMENT_NAME !== 'production'
-    ? `[${process.env.ENVIRONMENT_NAME.toUpperCase()}] ${botSettings.name}`
+    ? `${botSettings.name} [${process.env.ENVIRONMENT_NAME.toLowerCase()}]`
     : botSettings.name;
 
 const program = pipe(
