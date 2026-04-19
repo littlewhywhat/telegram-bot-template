@@ -27,6 +27,19 @@ console.log(`yourprefix_stag_${crypto.randomUUID().slice(0,5)}_bot`)
 
 Save both tokens.
 
+For each bot, create a Mini App via `/newapp`. BotFather will ask for:
+
+- **Title** and **description** — any placeholder, not used at runtime
+- **Photo** — upload `./assets/bot-avatar.jpg` from the repo
+- **Web App URL** — use any placeholder URL, overwritten on each deploy by `bot-settings.ts`
+- **Short name** — 3–30 characters, only `a-z`, `A-Z`, `0-9`, `_`. Used in `t.me/bot_username/short_name` links. Permanent.
+
+Generate a random staging short name in the browser console:
+
+```js
+console.log(`stag_${crypto.randomUUID().slice(0,5)}`)
+```
+
 ## 2. Setup MongoDB
 
 1. Create a cluster (e.g. free M0 at [mongodb.com/atlas](https://www.mongodb.com/atlas))
