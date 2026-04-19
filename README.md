@@ -30,7 +30,7 @@ Save both tokens.
 For each bot, create a Mini App via `/newapp`. BotFather will ask for:
 
 - **Title** and **description** — any placeholder, not used at runtime
-- **Photo** — upload `./assets/bot-avatar.jpg` from the repo
+- **Photo** — upload `./assets/web-app-photo-640x360.jpg` from the repo
 - **Web App URL** — use any placeholder URL, overwritten on each deploy by `bot-settings.ts`
 - **Short name** — 3–30 characters, only `a-z`, `A-Z`, `0-9`, `_`. Used in `t.me/bot_username/short_name` links. Permanent.
 
