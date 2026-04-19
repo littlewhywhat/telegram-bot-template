@@ -43,7 +43,8 @@ Save both tokens.
 3. Disable git-based deployments (handled by GitHub Actions via `vercel.json`)
 4. Copy **Project ID** and **Org ID** from Project Settings → General
 5. Get a deploy token from [vercel.com/account/tokens](https://vercel.com/account/tokens) (one token works for all projects)
-6. Add environment variables for both Preview (Staging) and Production scopes (see [Vercel secrets](#vercel))
+6. Disable **Deployment Protection** (Settings → Deployment Protection → set to **Off**) so Telegram webhook requests can reach the API endpoints
+7. Add environment variables for both Preview (Staging) and Production scopes (see [Vercel secrets](#vercel))
 
 ## 3. Setup Secrets
 
