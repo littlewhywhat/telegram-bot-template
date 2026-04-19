@@ -1,4 +1,7 @@
 export const botSettings = {
+  // Synced to Telegram on every deploy via setup-bot.ts.
+  // Username (the @handle) is set once in BotFather and cannot be changed here.
+  // Name: 1–64 chars, any characters allowed.
   name: 'My Bot',
   description:
     'A friendly bot that greets you every morning with an inspiring quote.',

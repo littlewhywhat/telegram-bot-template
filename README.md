@@ -14,6 +14,17 @@ Open [BotFather](https://t.me/BotFather) and create two bots:
 - **Staging bot** — for `develop` branch deploys
 - **Production bot** — for production deploys
 
+BotFather will ask for a **name** and a **username**:
+
+- **Name** (display name) — 1–64 characters, no restrictions on format. Overwritten on each deploy from `bot-settings.ts`, so use any placeholder.
+- **Username** (the `@handle`) — 5–32 characters, only `a-z`, `0-9`, `_`, must end with `bot`. Permanent, cannot be changed later.
+
+Generate a random staging username in the browser console:
+
+```js
+console.log(`yourprefix_stag_${crypto.randomUUID().slice(0,5)}_bot`)
+```
+
 Save both tokens.
 
 ## 2. Setup MongoDB Atlas
